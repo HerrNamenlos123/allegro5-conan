@@ -68,6 +68,7 @@ class Allegro5Conan(ConanFile):
         flags += " -DFREETYPE_INCLUDE_DIRS=" + freetype.package_folder + "/include/"
         flags += " -DFREETYPE_LIBRARY=" + freetype.package_folder + "/lib/freetype.lib"
 
+        print(flags)
         self.run("cd allegro5 && mkdir build && cd build && cmake .. " + flags)
 
     def build(self):
