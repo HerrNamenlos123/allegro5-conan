@@ -14,8 +14,12 @@ class Allegro5Conan(ConanFile):
     default_options = {"shared": False, "fPIC": True}
     generators = "cmake"
 
-    # Dependencies
+    # Fixed dependencies
     requires = "libpng/1.6.37", "zlib/1.2.11", "libjpeg/9d", "libwebp/1.2.2", "freetype/2.11.1", "bzip2/1.0.8"
+
+    def requirements(self):       # Conditional dependencies
+        if self.settings.os != "Windows":
+            self.requires("xorg/system")
 
     def config_options(self):
         if self.settings.os == "Windows":
