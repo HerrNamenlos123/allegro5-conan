@@ -34,14 +34,22 @@ class Allegro5Conan(ConanFile):
         freetype = self.dependencies["freetype"]
         bzip2 = self.dependencies["bzip2"]
 
+        # Read paths into variables because they are read-only
+        zlib_package_folder = zlib.package_folder
+        libpng_package_folder = libpng.package_folder
+        libjpeg_package_folder = libjpeg.package_folder
+        libwebp_package_folder = libwebp.package_folder
+        freetype_package_folder = freetype.package_folder
+        bzip2_package_folder = bzip2.package_folder
+
         # Library paths cannot contain windows backspaces because of cmake's target_link_libraries()
         if self.settings.os == "Windows":
-            zlib.package_folder = zlib.package_folder.replace("\\","/")
-            libpng.package_folder = libpng.package_folder.replace("\\","/")
-            libjpeg.package_folder = libjpeg.package_folder.replace("\\","/")
-            libwebp.package_folder = libwebp.package_folder.replace("\\","/")
-            freetype.package_folder = freetype.package_folder.replace("\\","/")
-            bzip2.package_folder = bzip2.package_folder.replace("\\","/")
+            zlib_package_folder = zlib_package_folder.replace("\\","/")
+            libpng_package_folder = libpng_package_folder.replace("\\","/")
+            libjpeg_package_folder = libjpeg_package_folder.replace("\\","/")
+            libwebp_package_folder = libwebp_package_folder.replace("\\","/")
+            freetype_package_folder = freetype_package_folder.replace("\\","/")
+            bzip2_package_folder = bzip2_package_folder.replace("\\","/")
 
         # Configure dependency flags for cmake
         flags = "-Wno-dev"
@@ -61,29 +69,29 @@ class Allegro5Conan(ConanFile):
         else:
             flags += " -DWANT_STATIC_RUNTIME=false"
 
-        flags += " -DPNG_PNG_INCLUDE_DIR=" + libpng.package_folder + "/include/"
-        flags += " -DPNG_LIBRARY=" + libpng.package_folder + "/lib/libpng16.lib;"
-        flags += " -DPNG_LIBRARIES=" + libpng.package_folder + "/lib/libpng16.lib;"
+        flags += " -DPNG_PNG_INCLUDE_DIR=" + libpng_package_folder + "/include/"
+        flags += " -DPNG_LIBRARY=" + libpng_package_folder + "/lib/libpng16.lib;"
+        flags += " -DPNG_LIBRARIES=" + libpng_package_folder + "/lib/libpng16.lib;"
         flags += " -DPNG_FOUND=TRUE"
 
-        flags += " -DJPEG_INCLUDE_DIR=" + libjpeg.package_folder + "/include/"
-        flags += " -DJPEG_LIBRARY=" + libjpeg.package_folder + "/lib/libjpeg.lib;"
+        flags += " -DJPEG_INCLUDE_DIR=" + libjpeg_package_folder + "/include/"
+        flags += " -DJPEG_LIBRARY=" + libjpeg_package_folder + "/lib/libjpeg.lib;"
         flags += " -DJPEG_FOUND=TRUE"
 
-        flags += " -DZLIB_INCLUDE_DIR=" + zlib.package_folder + "/include/"
-        flags += " -DZLIB_LIBRARIES=" + zlib.package_folder + "/lib/zlib.lib"
+        flags += " -DZLIB_INCLUDE_DIR=" + zlib_package_folder + "/include/"
+        flags += " -DZLIB_LIBRARIES=" + zlib_package_folder + "/lib/zlib.lib"
         flags += " -DZLIB_FOUND=TRUE"
 
-        flags += " -DWEBP_INCLUDE_DIRS=" + libwebp.package_folder + "/include/"
-        flags += " -DWEBP_LIBRARIES=" + libwebp.package_folder + "/lib/webp.lib;" + \
-            libwebp.package_folder + "/lib/webpdecoder.lib;" + \
-            libwebp.package_folder + "/lib/webpdemux.lib;" + \
-            libwebp.package_folder + "/lib/webpmux.lib"
+        flags += " -DWEBP_INCLUDE_DIRS=" + libwebp_package_folder + "/include/"
+        flags += " -DWEBP_LIBRARIES=" + libwebp_package_folder + "/lib/webp.lib;" + \
+            libwebp_package_folder + "/lib/webpdecoder.lib;" + \
+            libwebp_package_folder + "/lib/webpdemux.lib;" + \
+            libwebp_package_folder + "/lib/webpmux.lib"
         
-        flags += " -DFREETYPE_INCLUDE_DIRS=" + freetype.package_folder + "/include/"
-        flags += " -DFREETYPE_LIBRARY=" + freetype.package_folder + "/lib/freetype.lib;"
-        flags += " -DBZIP2_INCLUDE_DIR=" + bzip2.package_folder + "/include/"
-        flags += " -DBZIP2_LIBRARIES=" + bzip2.package_folder + "/lib/bz2.lib;"
+        flags += " -DFREETYPE_INCLUDE_DIRS=" + freetype_package_folder + "/include/"
+        flags += " -DFREETYPE_LIBRARY=" + freetype_package_folder + "/lib/freetype.lib;"
+        flags += " -DBZIP2_INCLUDE_DIR=" + bzip2_package_folder + "/include/"
+        flags += " -DBZIP2_LIBRARIES=" + bzip2_package_folder + "/lib/bz2.lib;"
         flags += " -DBZIP2_FOUND=TRUE"
 
         flags += " -DFREETYPE_PNG=on"
@@ -96,7 +104,7 @@ class Allegro5Conan(ConanFile):
         os.chdir("allegro5/build")
         self.run("cmake .. " + flags)
 
-    def build(self):   
+    def build(self):
         self.run("cd allegro5/build & cmake --build . --config RelWithDebInfo") # Build the project
 
     def package(self):
