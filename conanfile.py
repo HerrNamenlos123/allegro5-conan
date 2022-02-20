@@ -20,6 +20,7 @@ class Allegro5Conan(ConanFile):
     def requirements(self):       # Conditional dependencies
         if self.settings.os != "Windows":
             self.requires("xorg/system")
+            self.requires("opengl/system")
 
     def config_options(self):
         if self.settings.os == "Windows":
