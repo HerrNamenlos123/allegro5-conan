@@ -91,7 +91,10 @@ class Allegro5Conan(ConanFile):
         flags += " -DFREETYPE_ZLIB=on"
 
         # Call cmake generate
-        self.run("cd allegro5 & mkdir build & cd build & cmake .. " + flags)
+        if not os.path.exists("allegro5/build"):
+            os.mkdir("allegro5/build")
+        os.chdir("allegro5/build")
+        self.run("cmake .. " + flags)
 
     def build(self):   
         self.run("cd allegro5/build & cmake --build . --config RelWithDebInfo") # Build the project
