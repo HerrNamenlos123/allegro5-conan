@@ -1,4 +1,5 @@
 from conans import ConanFile, CMake, tools
+from pathlib import Path
 import os
 
 class Allegro5Conan(ConanFile):
@@ -15,7 +16,14 @@ class Allegro5Conan(ConanFile):
     generators = "cmake"
 
     # Fixed dependencies
-    requires = "libpng/1.6.37", "zlib/1.2.11", "libjpeg/9d", "libwebp/1.2.2", "freetype/2.11.1", "bzip2/1.0.8"
+    requires = "libpng/1.6.37", \
+                "zlib/1.2.11", \
+                "bzip2/1.0.8", \
+                "libjpeg/9d", \
+                "freetype/2.11.1", \
+                "libwebp/1.2.2", \
+                "flac/1.3.3", \
+                "ogg/1.3.5"
 
     def requirements(self):       # Conditional dependencies
         if self.settings.os != "Windows":
@@ -27,33 +35,29 @@ class Allegro5Conan(ConanFile):
             del self.options.fPIC
 
     def source(self):
-        self.run("git clone git@github.com:HerrNamenlos123/allegro5-1.git --depth=1 --single-branch --branch=fix-cmake allegro5")
-        #self.run("git clone https://github.com/liballeg/allegro5.git --depth=1 --single-branch --branch=5.2.7")
+        self.run("git clone https://github.com/liballeg/allegro5.git --depth=1 --single-branch --branch=5.2.7")
 
     def generate(self):
 
         zlib = self.dependencies["zlib"]
         libpng = self.dependencies["libpng"]
-        libjpeg = self.dependencies["libjpeg"]
-        libwebp = self.dependencies["libwebp"]
-        freetype = self.dependencies["freetype"]
         bzip2 = self.dependencies["bzip2"]
+
+        libjpeg = self.dependencies["libjpeg"]
+        freetype = self.dependencies["freetype"]
+        libwebp = self.dependencies["libwebp"]
+        flac = self.dependencies["flac"]
+        ogg = self.dependencies["ogg"]
 
         # Read paths into variables because they are read-only
         zlib_package_folder = zlib.package_folder
         libpng_package_folder = libpng.package_folder
-        libjpeg_package_folder = libjpeg.package_folder
-        libwebp_package_folder = libwebp.package_folder
-        freetype_package_folder = freetype.package_folder
         bzip2_package_folder = bzip2.package_folder
 
         # Library paths cannot contain windows backspaces because of cmake's target_link_libraries()
         if self.settings.os == "Windows":
             zlib_package_folder = zlib_package_folder.replace("\\","/")
             libpng_package_folder = libpng_package_folder.replace("\\","/")
-            libjpeg_package_folder = libjpeg_package_folder.replace("\\","/")
-            libwebp_package_folder = libwebp_package_folder.replace("\\","/")
-            freetype_package_folder = freetype_package_folder.replace("\\","/")
             bzip2_package_folder = bzip2_package_folder.replace("\\","/")
 
         # Configure dependency flags for cmake
@@ -77,36 +81,38 @@ class Allegro5Conan(ConanFile):
         flags += " -DPNG_PNG_INCLUDE_DIR=" + libpng_package_folder + "/include/"
         flags += " -DPNG_LIBRARY=" + libpng_package_folder + "/lib/libpng16.lib;"
         flags += " -DPNG_LIBRARIES=" + libpng_package_folder + "/lib/libpng16.lib;"
-        flags += " -DPNG_FOUND=TRUE"
 
-        flags += " -DJPEG_INCLUDE_DIR=" + libjpeg_package_folder + "/include/"
-        flags += " -DJPEG_LIBRARY=" + libjpeg_package_folder + "/lib/libjpeg.lib;"
-        flags += " -DJPEG_FOUND=TRUE"
+        flags += " -DJPEG_INCLUDE_DIR=" + libjpeg.package_folder + "/include/"
+        flags += " -DJPEG_LIBRARY=" + libjpeg.package_folder + "/lib/libjpeg.lib;"
 
         flags += " -DZLIB_INCLUDE_DIR=" + zlib_package_folder + "/include/"
         flags += " -DZLIB_LIBRARIES=" + zlib_package_folder + "/lib/zlib.lib"
-        flags += " -DZLIB_FOUND=TRUE"
+        flags += " -DZLIB_LIBRARY=" + zlib_package_folder + "/lib/zlib.lib"
 
-        flags += " -DWEBP_INCLUDE_DIRS=" + libwebp_package_folder + "/include/"
-        flags += " -DWEBP_LIBRARIES=" + libwebp_package_folder + "/lib/webp.lib;" + \
-            libwebp_package_folder + "/lib/webpdecoder.lib;" + \
-            libwebp_package_folder + "/lib/webpdemux.lib;" + \
-            libwebp_package_folder + "/lib/webpmux.lib"
+        flags += " -DWEBP_INCLUDE_DIRS=" + libwebp.package_folder + "/include/"
+        flags += " -DWEBP_LIBRARIES=" + libwebp.package_folder + "/lib/webp.lib;" + \
+            libwebp.package_folder + "/lib/webpdecoder.lib;" + \
+            libwebp.package_folder + "/lib/webpdemux.lib;" + \
+            libwebp.package_folder + "/lib/webpmux.lib"
         
-        flags += " -DFREETYPE_INCLUDE_DIRS=" + freetype_package_folder + "/include/"
-        flags += " -DFREETYPE_LIBRARY=" + freetype_package_folder + "/lib/freetype.lib;"
+        flags += " -DFREETYPE_INCLUDE_DIRS=" + freetype.package_folder + "/include/"
+        flags += " -DFREETYPE_LIBRARY=" + freetype.package_folder + "/lib/freetype.lib;"
         flags += " -DBZIP2_INCLUDE_DIR=" + bzip2_package_folder + "/include/"
         flags += " -DBZIP2_LIBRARIES=" + bzip2_package_folder + "/lib/bz2.lib;"
-        flags += " -DBZIP2_FOUND=TRUE"
 
         flags += " -DFREETYPE_PNG=on"
         flags += " -DFREETYPE_BZIP2=on"
         flags += " -DFREETYPE_ZLIB=on"
 
+        flags += " -DFLAC_INCLUDE_DIR=" + flac.package_folder + "/include/"
+        flags += " -DFLAC_LIBRARY=" + flac.package_folder + "/lib/FLAC.lib;" + flac.package_folder + "/lib/FLAC++.lib;"
+        flags += " -DOGG_INCLUDE_DIR=" + ogg.package_folder + "/include/"
+        flags += " -DOGG_LIBRARY=" + ogg.package_folder + "/lib/ogg.lib;"
+
         # Call cmake generate
-        if not os.path.exists("allegro5/build"):
-            os.mkdir("allegro5/build")
-        os.chdir("allegro5/build")
+        path = Path(self.build_folder + "/allegro5/build")
+        path.mkdir(parents=True, exist_ok=True)
+        os.chdir(path)
         self.run("cmake .. " + flags)
 
     def build(self):
