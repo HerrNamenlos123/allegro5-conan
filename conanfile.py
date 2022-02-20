@@ -15,20 +15,15 @@ class Allegro5Conan(ConanFile):
     generators = "cmake"
 
     # Dependencies
-    requires = "libpng/1.6.37", "zlib/1.2.11", "libjpeg/9d", "libwebp/1.2.2", "freetype/2.11.1"
+    requires = "libpng/1.6.37", "zlib/1.2.11", "libjpeg/9d", "libwebp/1.2.2", "freetype/2.11.1", "bzip2/1.0.8"
 
     def config_options(self):
         if self.settings.os == "Windows":
             del self.options.fPIC
 
     def source(self):
-
-        # Check if the DirectX SDK is installed
-        if self.settings.os == "Windows":
-            if not os.path.exists(str(os.getenv("DXSDK_DIR"))):
-                raise Exception("Please make sure the DirectX SDK is installed! Download from https://www.microsoft.com/en-us/download/details.aspx?id=6812")
-
-        self.run("git clone https://github.com/liballeg/allegro5.git --depth=1 --single-branch --branch=5.2.7")
+        self.run("git clone git@github.com:HerrNamenlos123/allegro5-1.git --depth=1 --single-branch --branch=fix-cmake allegro5")
+        #self.run("git clone https://github.com/liballeg/allegro5.git --depth=1 --single-branch --branch=5.2.7")
 
     def generate(self):
 
@@ -37,7 +32,18 @@ class Allegro5Conan(ConanFile):
         libjpeg = self.dependencies["libjpeg"]
         libwebp = self.dependencies["libwebp"]
         freetype = self.dependencies["freetype"]
+        bzip2 = self.dependencies["bzip2"]
 
+        # Library paths cannot contain windows backspaces because of cmake's target_link_libraries()
+        if self.settings.os == "Windows":
+            zlib.package_folder = zlib.package_folder.replace("\\","/")
+            libpng.package_folder = libpng.package_folder.replace("\\","/")
+            libjpeg.package_folder = libjpeg.package_folder.replace("\\","/")
+            libwebp.package_folder = libwebp.package_folder.replace("\\","/")
+            freetype.package_folder = freetype.package_folder.replace("\\","/")
+            bzip2.package_folder = bzip2.package_folder.replace("\\","/")
+
+        # Configure dependency flags for cmake
         flags = "-Wno-dev"
         flags += " -DPREFER_STATIC_DEPS=true"
         flags += " -DSHARED=" + str(self.options.shared).lower()
@@ -49,15 +55,24 @@ class Allegro5Conan(ConanFile):
         flags += " -DWANT_TESTS=false"
         flags += " -DWANT_DEMO=false"
         flags += " -DWANT_RELEASE_LOGGING=false"
-        flags += " -DWANT_STATIC_RUNTIME=" + str(self.settings.compiler.runtime == "MT").lower()
+        
+        if self.settings.os == "Windows":
+            flags += " -DWANT_STATIC_RUNTIME=" + str(self.settings.compiler.runtime == "MT").lower()
+        else:
+            flags += " -DWANT_STATIC_RUNTIME=false"
 
         flags += " -DPNG_PNG_INCLUDE_DIR=" + libpng.package_folder + "/include/"
-        flags += " -DPNG_LIBRARY=" + libpng.package_folder + "/lib/libpng16.lib"
+        flags += " -DPNG_LIBRARY=" + libpng.package_folder + "/lib/libpng16.lib;"
+        flags += " -DPNG_LIBRARIES=" + libpng.package_folder + "/lib/libpng16.lib;"
+        flags += " -DPNG_FOUND=TRUE"
 
         flags += " -DJPEG_INCLUDE_DIR=" + libjpeg.package_folder + "/include/"
-        flags += " -DJPEG_LIBRARY=" + libjpeg.package_folder + "/lib/libjpeg.lib"
+        flags += " -DJPEG_LIBRARY=" + libjpeg.package_folder + "/lib/libjpeg.lib;"
+        flags += " -DJPEG_FOUND=TRUE"
 
         flags += " -DZLIB_INCLUDE_DIR=" + zlib.package_folder + "/include/"
+        flags += " -DZLIB_LIBRARIES=" + zlib.package_folder + "/lib/zlib.lib"
+        flags += " -DZLIB_FOUND=TRUE"
 
         flags += " -DWEBP_INCLUDE_DIRS=" + libwebp.package_folder + "/include/"
         flags += " -DWEBP_LIBRARIES=" + libwebp.package_folder + "/lib/webp.lib;" + \
@@ -66,13 +81,20 @@ class Allegro5Conan(ConanFile):
             libwebp.package_folder + "/lib/webpmux.lib"
         
         flags += " -DFREETYPE_INCLUDE_DIRS=" + freetype.package_folder + "/include/"
-        flags += " -DFREETYPE_LIBRARY=" + freetype.package_folder + "/lib/freetype.lib"
+        flags += " -DFREETYPE_LIBRARY=" + freetype.package_folder + "/lib/freetype.lib;"
+        flags += " -DBZIP2_INCLUDE_DIR=" + bzip2.package_folder + "/include/"
+        flags += " -DBZIP2_LIBRARIES=" + bzip2.package_folder + "/lib/bz2.lib;"
+        flags += " -DBZIP2_FOUND=TRUE"
 
-        print(flags)
-        self.run("cd allegro5 && mkdir build && cd build && cmake .. " + flags)
+        flags += " -DFREETYPE_PNG=on"
+        flags += " -DFREETYPE_BZIP2=on"
+        flags += " -DFREETYPE_ZLIB=on"
 
-    def build(self):
-        self.run("cd allegro5/build && cmake --build . --config RelWithDebInfo")
+        # Call cmake generate
+        self.run("cd allegro5 & mkdir build & cd build & cmake .. " + flags)
+
+    def build(self):   
+        self.run("cd allegro5/build & cmake --build . --config RelWithDebInfo") # Build the project
 
     def package(self):
         self.copy("*", dst="include", src="allegro5/include")
