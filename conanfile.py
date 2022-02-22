@@ -61,7 +61,7 @@ class Allegro5Conan(ConanFile):
             bzip2_package_folder = bzip2_package_folder.replace("\\","/")
 
         # Configure dependency flags for cmake
-        flags = "-Wno-dev"
+        flags = ""
         flags += " -DPREFER_STATIC_DEPS=true"
         flags += " -DSHARED=" + str(self.options.shared).lower()
         flags += " -DWANT_DOCS=false"
@@ -113,10 +113,20 @@ class Allegro5Conan(ConanFile):
         path = Path(self.build_folder + "/allegro5/build")
         path.mkdir(parents=True, exist_ok=True)
         os.chdir(path)
-        self.run("cmake .. " + flags)
+        
+        if self.settings.os == "Windows":
+        	self.run("cmake .. -Wno-dev" + flags)
+        else:
+        	self.run("cmake .. -Wno-dev")
 
     def build(self):
-        self.run("cd allegro5/build & cmake --build . --config RelWithDebInfo") # Build the project
+        if self.settings.os == "Windows":
+        	self.run("cd allegro5/build & cmake --build . --config RelWithDebInfo") # Build the project
+        else:
+        	path = Path(self.build_folder + "/allegro5/build")
+        	path.mkdir(parents=True, exist_ok=True)
+        	os.chdir(path)
+        	self.run("make") # Build the project
 
     def package(self):
         self.copy("*", dst="include", src="allegro5/include")
