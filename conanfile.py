@@ -226,7 +226,7 @@ class Allegro5Conan(ConanFile):
                message("-- Using OPUS from conan package")'''.format(
                    opusfile.package_folder + "/include", opus.package_folder + "/include", opus.package_folder + "/include/opus", 
                    opus.package_folder + "/lib/" + prefix + opus.cpp_info.components["libopus"].libs[0] + suffix,
-                   opusfile.package_folder + "/lib/" + prefix + opusfile.cpp_info.components["libopusurl"].libs[0] + suffix,
+                   opusfile.package_folder + "/lib/" + prefix + opusfile.cpp_info.components["opusurl"].libs[0] + suffix,
                    opusfile.package_folder + "/lib/" + prefix + opusfile.cpp_info.components["libopusfile"].libs[0] + suffix,
                    ogg.package_folder + "/lib/" + prefix + ogg.cpp_info.components["ogglib"].libs[0] + suffix))
 
