@@ -96,26 +96,26 @@ class Allegro5Conan(ConanFile):
         flags += " -DZLIB_LIBRARIES={}/lib/zlib.{}".format(zlib_package_folder, lib_suffix)
         flags += " -DZLIB_LIBRARY={}/lib/zlib.{}".format(zlib_package_folder, lib_suffix)
 
-        flags += " -DWEBP_INCLUDE_DIRS={}/include/".format(libwebp.package_folder)
-        path = libwebp.package_folder
-        front = lib_prefix
-        end = lib_suffix
+        #flags += " -DWEBP_INCLUDE_DIRS={}/include/".format(libwebp.package_folder)
+        #path = libwebp.package_folder
+        #front = lib_prefix
+        #end = lib_suffix
         #flags += " -DWEBP_LIBRARIES={}/lib/{}webp.{};{}/lib/{}webpdecoder.{};{}/lib/{}webpdemux.{};{}/lib/{}webpmux.{}".format(
         #    path, front, end, path, front, end, path, front, end, path, front, end)
         
-        flags += " -DFREETYPE_INCLUDE_DIRS={}/include/".format(freetype.package_folder)
-        flags += " -DFREETYPE_LIBRARY={}/lib/freetype.lib;".format(freetype.package_folder)
-        flags += " -DBZIP2_INCLUDE_DIR={}/include/".format(bzip2_package_folder)
-        flags += " -DBZIP2_LIBRARIES={}/lib/bz2.{};".format(bzip2_package_folder, lib_suffix)
-
-        flags += " -DFREETYPE_PNG=on"
-        flags += " -DFREETYPE_BZIP2=on"
-        flags += " -DFREETYPE_ZLIB=on"
-
-        flags += " -DFLAC_INCLUDE_DIR={}/include/".format(flac.package_folder)
-        flags += " -DFLAC_LIBRARY={}/lib/FLAC.{};{}/lib/FLAC++.{};".format(flac.package_folder, lib_suffix, flac.package_folder, lib_suffix)
-        flags += " -DOGG_INCLUDE_DIR={}/include/".format(ogg.package_folder)
-        flags += " -DOGG_LIBRARY={}/lib/ogg.{};".format(ogg.package_folder, lib_suffix)
+        #flags += " -DFREETYPE_INCLUDE_DIRS={}/include/".format(freetype.package_folder)
+        #flags += " -DFREETYPE_LIBRARY={}/lib/freetype.lib;".format(freetype.package_folder)
+        #flags += " -DBZIP2_INCLUDE_DIR={}/include/".format(bzip2_package_folder)
+        #flags += " -DBZIP2_LIBRARIES={}/lib/bz2.{};".format(bzip2_package_folder, lib_suffix)
+#
+        #flags += " -DFREETYPE_PNG=on"
+        #flags += " -DFREETYPE_BZIP2=on"
+        #flags += " -DFREETYPE_ZLIB=on"
+#
+        #flags += " -DFLAC_INCLUDE_DIR={}/include/".format(flac.package_folder)
+        #flags += " -DFLAC_LIBRARY={}/lib/FLAC.{};{}/lib/FLAC++.{};".format(flac.package_folder, lib_suffix, flac.package_folder, lib_suffix)
+        #flags += " -DOGG_INCLUDE_DIR={}/include/".format(ogg.package_folder)
+        #flags += " -DOGG_LIBRARY={}/lib/ogg.{};".format(ogg.package_folder, lib_suffix)
 
         # Call cmake generate
         path = Path(self.build_folder + "/allegro5/build")
