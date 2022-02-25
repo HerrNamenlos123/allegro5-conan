@@ -32,7 +32,8 @@ class Allegro5Conan(ConanFile):
                 "libalsa/1.2.5.1", \
                 "pulseaudio/14.2", \
                 "opus/1.3.1", \
-                "opusfile/0.12"
+                "opusfile/0.12", \
+                "theora/1.1.1"
 
     def requirements(self):       # Conditional dependencies
         if self.settings.os != "Windows":
@@ -70,6 +71,7 @@ class Allegro5Conan(ConanFile):
         pulseaudio = self.dependencies["pulseaudio"]
         opus = self.dependencies["opus"]
         opusfile = self.dependencies["opusfile"]
+        theora = self.dependencies["theora"]
 
         # Configure dependency flags for cmake
         flags = "-Wno-dev"
@@ -229,6 +231,17 @@ class Allegro5Conan(ConanFile):
                    opusfile.package_folder + "/lib/" + prefix + opusfile.cpp_info.components["libopusfile"].libs[0] + suffix,
                    opus.package_folder + "/lib/" + prefix + opus.cpp_info.components["libopus"].libs[0] + suffix,
                    ogg.package_folder + "/lib/" + prefix + ogg.cpp_info.components["ogglib"].libs[0] + suffix))
+
+        # libtheora dependency
+        tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/video/CMakeLists.txt")), 
+            "find_package(Theora)",
+            '''set(THEORA_FOUND 1)
+               set(THEORA_INCLUDE_DIR {})
+               set(THEORA_LIBRARIES {} {})
+               message("-- Using libtheora from conan package")'''.format(
+                   theora.package_folder + "/include", 
+                   theora.package_folder + "/lib/" + prefix + theora.cpp_info.components["theoradec"].libs[0] + suffix,
+                   theora.package_folder + "/lib/" + prefix + theora.cpp_info.components["theoraenc"].libs[0] + suffix))
 
         # Call cmake generate
         path = Path(self.build_folder + "/allegro5/build")
