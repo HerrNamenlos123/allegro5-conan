@@ -92,7 +92,7 @@ class Allegro5Conan(ConanFile):
              set(PNG_DEFINITIONS {})
              message(Libraries:)
              message(${PNG_LIBRARIES})
-             set(PNG_INCLUDE_DIR {})'''.format(0, 0, 0))
+             set(PNG_INCLUDE_DIR {})'''.format("", "", ""))
 
         #flags += " -DPNG_LIBRARY={}/lib/libpng16.{}".format(libpng_package_folder, lib_suffix)
         #flags += " -DPNG_LIBRARIES={}/lib/libpng16.{}".format(libpng_package_folder, lib_suffix)
