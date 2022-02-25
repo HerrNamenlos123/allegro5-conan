@@ -36,7 +36,8 @@ class Allegro5Conan(ConanFile):
             del self.options.fPIC
 
     def source(self):
-        self.run("git clone https://github.com/liballeg/allegro5.git --depth=1 --single-branch --branch=5.2.7")
+        #self.run("git clone https://github.com/liballeg/allegro5.git --depth=1 --single-branch --branch=5.2.7")
+        self.run("git clone https://github.com/liballeg/allegro5.git --depth=1 --single-branch --branch=master")
 
     def generate(self):
 
@@ -73,20 +74,18 @@ class Allegro5Conan(ConanFile):
         flags += " -DWANT_DEMO=false"
         flags += " -DWANT_RELEASE_LOGGING=false"
 
-        lib_prefix = "lib"
-        lib_suffix = "a"
         if self.settings.compiler == "Visual Studio" or self.settings.compiler == "clang":
             flags += " -DWANT_STATIC_RUNTIME=" + str(self.settings.compiler.runtime == "MT").lower()
             flags += " -DPREFER_STATIC_DEPS=true"
-            lib_prefix = ""
-            lib_suffix = "lib"
-            #flags += " -DPNG_LIBRARY={}/lib/libpng16.{}".format(libpng_package_folder, lib_suffix)
-            #flags += " -DPNG_LIBRARIES={}/lib/libpng16.{}".format(libpng_package_folder, lib_suffix)
         else:
             flags += " -DWANT_STATIC_RUNTIME=false"
             flags += " -DPREFER_STATIC_DEPS=false"
-            #flags += " -DPNG_LIBRARY={}/lib/libpng.{}".format(libpng_package_folder, lib_suffix)
-            #flags += " -DPNG_LIBRARIES={}/lib/libpng.{}".format(libpng_package_folder, lib_suffix)
+
+        print(self._source_subfolder)
+        tools.replace_in_file(os.path.join(self._source_subfolder))
+
+        #flags += " -DPNG_LIBRARY={}/lib/libpng16.{}".format(libpng_package_folder, lib_suffix)
+        #flags += " -DPNG_LIBRARIES={}/lib/libpng16.{}".format(libpng_package_folder, lib_suffix)
 
         #flags += " -DPNG_PNG_INCLUDE_DIR={}/include/".format(libpng_package_folder)
 #
