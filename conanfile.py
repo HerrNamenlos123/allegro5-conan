@@ -29,6 +29,10 @@ class Allegro5Conan(ConanFile):
 
     def requirements(self):       # Conditional dependencies
         if self.settings.os != "Windows":
+            self.options["freetype"].with_png = False
+            self.options["freetype"].with_zlib = False
+            self.options["freetype"].with_bzip2 = False
+            self.options["freetype"].with_brotli = False
             self.requires("xorg/system")
             package_tool = tools.SystemPackageTool(conanfile=self, default_mode='verify')
             package_tool.install(update=True, packages="libgl1-mesa-dev")
