@@ -141,10 +141,11 @@ class Allegro5Conan(ConanFile):
             '''set(FLAC_FOUND 1)
                set(HAVE_FLAC 1)
                set(FLAC_INCLUDE_DIR {})
-               set(FLAC_LIBRARIES {})
+               set(FLAC_LIBRARIES {} {})
                message("-- Using FLAC from conan package")'''.format(
-                   flac.package_folder + "/include", flac.package_folder + "/lib/" + 
-                   prefix + flac.cpp_info.components["libflac"].libs[0] + suffix))
+                   flac.package_folder + "/include", 
+                   flac.package_folder + "/lib/" + prefix + flac.cpp_info.components["libflac"].libs[0] + suffix,
+                   ogg.package_folder + "/lib/" + prefix + ogg.cpp_info.libs[0] + suffix))
 
         # vorbis dependency
         tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/acodec/CMakeLists.txt")), 
