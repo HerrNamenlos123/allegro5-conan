@@ -186,7 +186,7 @@ class Allegro5Conan(ConanFile):
                    openal.package_folder + "/lib/" + prefix + openal.cpp_info.libs[0] + suffix))
 
         # PhysFS dependency
-        tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/audio/CMakeLists.txt")), 
+        tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/CMakeLists.txt")), 
             "find_package(PhysFS)",
             '''set(PHYSFS_FOUND 1)
                set(HAVE_PHYSFS 1)
