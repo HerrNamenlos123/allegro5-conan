@@ -91,7 +91,7 @@ class Allegro5Conan(ConanFile):
                set(PNG_LIBRARIES 1)
                set(PNG_DEFINITIONS 1)
                message(Libraries:)
-               message(${{PNG_LIBRARIES})
+               message($PNG_LIBRARIES})
                set(PNG_INCLUDE_DIR 1)'''
         )
 
