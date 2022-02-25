@@ -142,11 +142,6 @@ class Allegro5Conan(ConanFile):
                message("-- Using FLAC from conan package")'''.format(
                    flac.package_folder + "/include", flac.package_folder + "/lib/" + prefix + flac.cpp_info.libs[0] + suffix))
 
-        #flags += " -DFLAC_INCLUDE_DIR={}/include/".format(flac.package_folder)
-        #flags += " -DFLAC_LIBRARY={}/lib/FLAC.{};{}/lib/FLAC++.{}".format(flac.package_folder, lib_suffix, flac.package_folder, lib_suffix)
-        #flags += " -DOGG_INCLUDE_DIR={}/include/".format(ogg.package_folder)
-        #flags += " -DOGG_LIBRARY={}/lib/ogg.{}".format(ogg.package_folder, lib_suffix)
-
         # Call cmake generate
         path = Path(self.build_folder + "/allegro5/build")
         path.mkdir(parents=True, exist_ok=True)
