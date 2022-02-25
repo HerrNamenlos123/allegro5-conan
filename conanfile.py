@@ -28,7 +28,8 @@ class Allegro5Conan(ConanFile):
     def requirements(self):       # Conditional dependencies
         if self.settings.os != "Windows":
             self.requires("xorg/system")
-            self.requires("opengl/system")
+            package_tool = tools.SystemPackageTool(conanfile=self, default_mode='verify')
+            package_tool.install(update=True, packages="libgl1-mesa-dev")
 
     def config_options(self):
         if self.settings.os == "Windows":
@@ -115,18 +116,18 @@ class Allegro5Conan(ConanFile):
         os.chdir(path)
         
         if self.settings.os == "Windows":
-        	self.run("cmake .. -Wno-dev" + flags)
+            self.run("cmake .. -Wno-dev" + flags)
         else:
-        	self.run("cmake .. -Wno-dev")
+            self.run("cmake .. -Wno-dev")
 
     def build(self):
         if self.settings.os == "Windows":
-        	self.run("cd allegro5/build & cmake --build . --config RelWithDebInfo") # Build the project
+            self.run("cd allegro5/build & cmake --build . --config RelWithDebInfo") # Build the project
         else:
-        	path = Path(self.build_folder + "/allegro5/build")
-        	path.mkdir(parents=True, exist_ok=True)
-        	os.chdir(path)
-        	self.run("make") # Build the project
+            path = Path(self.build_folder + "/allegro5/build")
+            path.mkdir(parents=True, exist_ok=True)
+            os.chdir(path)
+            self.run("make") # Build the project
 
     def package(self):
         self.copy("*", dst="include", src="allegro5/include")
