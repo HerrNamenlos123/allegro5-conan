@@ -80,7 +80,7 @@ class Allegro5Conan(ConanFile):
                set(PNG_INCLUDE_DIR {})
                set(PNG_LIBRARIES {})
                message("-- Using PNG from conan package")'''.format(
-                   libpng.package_folder + "/" + libpng.cpp_info.libs[0], libpng.package_folder + "/include"))
+                   libpng.package_folder + "/include", libpng.package_folder + "/" + libpng.cpp_info.libs[0]))
 
         # libjpeg dependency
         tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/image/CMakeLists.txt")), 
@@ -90,7 +90,7 @@ class Allegro5Conan(ConanFile):
                set(JPEG_INCLUDE_DIR {})
                set(JPEG_LIBRARIES {})
                message("-- Using JPEG from conan package")'''.format(
-                   libjpeg.package_folder + "/" + libjpeg.cpp_info.libs[0], libjpeg.package_folder + "/include"))
+                   libjpeg.package_folder + "/include", libjpeg.package_folder + "/" + libjpeg.cpp_info.libs[0]))
 
         #flags += " -DPNG_LIBRARY={}/lib/libpng16.{}".format(libpng_package_folder, lib_suffix)
         #flags += " -DPNG_LIBRARIES={}/lib/libpng16.{}".format(libpng_package_folder, lib_suffix)
