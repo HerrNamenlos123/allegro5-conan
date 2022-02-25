@@ -69,64 +69,67 @@ class Allegro5Conan(ConanFile):
         flags += " -DWANT_DEMO=false"
         flags += " -DWANT_RELEASE_LOGGING=false"
 
+        prefix = "lib"
+        suffix = ".a"
         if self.settings.compiler == "Visual Studio" or self.settings.compiler == "clang":
             flags += " -DWANT_STATIC_RUNTIME=" + str(self.settings.compiler.runtime == "MT").lower()
             flags += " -DPREFER_STATIC_DEPS=true"
+            prefix = ""
+            suffix = ".lib"
         else:
             flags += " -DWANT_STATIC_RUNTIME=false"
             flags += " -DPREFER_STATIC_DEPS=false"
 
-        ## libpng dependency
-        #tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/image/CMakeLists.txt")), 
-        #    "find_package(PNG)",
-        #    '''set(PNG_FOUND 1)
-        #       set(HAVE_PNG 1)
-        #       set(PNG_INCLUDE_DIR {})
-        #       set(PNG_LIBRARIES {})
-        #       message("-- Using PNG from conan package")'''.format(
-        #           libpng.package_folder + "/include", libpng.package_folder + "/lib/" + libpng.cpp_info.libs[0]))
-#
-        ## libjpeg dependency
-        #tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/image/CMakeLists.txt")), 
-        #    "find_package(JPEG)",
-        #    '''set(JPEG_FOUND 1)
-        #       set(HAVE_JPEG 1)
-        #       set(JPEG_INCLUDE_DIR {})
-        #       set(JPEG_LIBRARIES {})
-        #       message("-- Using JPEG from conan package")'''.format(
-        #           libjpeg.package_folder + "/include", libjpeg.package_folder + "/lib/" + libjpeg.cpp_info.libs[0]))
-#
-        ## libwebp dependency
-        #tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/image/CMakeLists.txt")), 
-        #    "find_package(WebP)",
-        #    '''set(WEBP_FOUND 1)
-        #       set(HAVE_WEBP 1)
-        #       set(WEBP_INCLUDE_DIRS {})
-        #       set(WEBP_LIBRARIES {})
-        #       message("-- Using WebP from conan package")'''.format(
-        #           libwebp.package_folder + "/include", 
-        #           libwebp.package_folder + "/lib/" + libwebp.cpp_info.components["webp"].libs[0]))
-#
-        ## FreeType dependency
-        #tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/CMakeLists.txt")), 
-        #    "find_package(Freetype)",
-        #    '''set(FREETYPE_FOUND 1)
-        #       set(HAVE_FREETYPE 1)
-        #       set(FREETYPE_INCLUDE_DIRS {})
-        #       set(FREETYPE_LIBRARIES {})
-        #       message("-- Using FreeType from conan package")'''.format(
-        #           freetype.package_folder + "/include/freetype2", 
-        #           freetype.package_folder + "/lib/" + freetype.cpp_info.libs[0]))
-#
+        # libpng dependency
+        tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/image/CMakeLists.txt")), 
+            "find_package(PNG)",
+            '''set(PNG_FOUND 1)
+               set(HAVE_PNG 1)
+               set(PNG_INCLUDE_DIR {})
+               set(PNG_LIBRARIES {})
+               message("-- Using PNG from conan package")'''.format(
+                   libpng.package_folder + "/include", libpng.package_folder + "/lib/" + prefix + libpng.cpp_info.libs[0] + suffix))
+
+        # libjpeg dependency
+        tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/image/CMakeLists.txt")), 
+            "find_package(JPEG)",
+            '''set(JPEG_FOUND 1)
+               set(HAVE_JPEG 1)
+               set(JPEG_INCLUDE_DIR {})
+               set(JPEG_LIBRARIES {})
+               message("-- Using JPEG from conan package")'''.format(
+                   libjpeg.package_folder + "/include", libjpeg.package_folder + "/lib/" + prefix + libjpeg.cpp_info.libs[0] + suffix))
+
+        # libwebp dependency
+        tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/image/CMakeLists.txt")), 
+            "find_package(WebP)",
+            '''set(WEBP_FOUND 1)
+               set(HAVE_WEBP 1)
+               set(WEBP_INCLUDE_DIRS {})
+               set(WEBP_LIBRARIES {})
+               message("-- Using WebP from conan package")'''.format(
+                   libwebp.package_folder + "/include", 
+                   libwebp.package_folder + "/lib/" + prefix + libwebp.cpp_info.components["webp"].libs[0] + suffix))
+
+        # FreeType dependency
+        tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/CMakeLists.txt")), 
+            "find_package(Freetype)",
+            '''set(FREETYPE_FOUND 1)
+               set(HAVE_FREETYPE 1)
+               set(FREETYPE_INCLUDE_DIRS {})
+               set(FREETYPE_LIBRARIES {})
+               message("-- Using FreeType from conan package")'''.format(
+                   freetype.package_folder + "/include/freetype2", 
+                   freetype.package_folder + "/lib/" + prefix + freetype.cpp_info.libs[0] + suffix))
+
         #flags += " -DZLIB_INCLUDE_DIR={}/include/".format(zlib_package_folder)
         #flags += " -DZLIB_LIBRARIES={}/lib/zlib.{}".format(zlib_package_folder, lib_suffix)
         #flags += " -DZLIB_LIBRARY={}/lib/zlib.{}".format(zlib_package_folder, lib_suffix)
-#
+
         #flags += " -DFLAC_INCLUDE_DIR={}/include/".format(flac.package_folder)
         #flags += " -DFLAC_LIBRARY={}/lib/FLAC.{};{}/lib/FLAC++.{}".format(flac.package_folder, lib_suffix, flac.package_folder, lib_suffix)
         #flags += " -DOGG_INCLUDE_DIR={}/include/".format(ogg.package_folder)
         #flags += " -DOGG_LIBRARY={}/lib/ogg.{}".format(ogg.package_folder, lib_suffix)
-        flags += " -DCMAKE_PREFIX_PATH=/home/me/.conan/data/"
 
         # Call cmake generate
         path = Path(self.build_folder + "/allegro5/build")
