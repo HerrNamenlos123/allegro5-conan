@@ -46,6 +46,7 @@ class Allegro5Conan(ConanFile):
             self.requires("xorg/system")
             package_tool = tools.SystemPackageTool(conanfile=self, default_mode='verify')
             package_tool.install(update=True, packages="libgl1-mesa-dev")
+            package_tool.install(update=True, packages="libgtk-3-dev")
 
     def config_options(self):
         if self.settings.os == "Windows":
