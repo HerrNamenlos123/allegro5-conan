@@ -122,9 +122,25 @@ class Allegro5Conan(ConanFile):
                    freetype.package_folder + "/include/freetype2", 
                    freetype.package_folder + "/lib/" + prefix + freetype.cpp_info.libs[0] + suffix))
 
-        #flags += " -DZLIB_INCLUDE_DIR={}/include/".format(zlib_package_folder)
-        #flags += " -DZLIB_LIBRARIES={}/lib/zlib.{}".format(zlib_package_folder, lib_suffix)
-        #flags += " -DZLIB_LIBRARY={}/lib/zlib.{}".format(zlib_package_folder, lib_suffix)
+        # zlib dependency
+        tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/CMakeLists.txt")), 
+            "find_package(ZLIB)",
+            '''set(ZLIB_FOUND 1)
+               set(HAVE_ZLIB 1)
+               set(ZLIB_INCLUDE_DIR {})
+               set(ZLIB_LIBRARY {})
+               message("-- Using ZLIB from conan package")'''.format(
+                   zlib.package_folder + "/include", zlib.package_folder + "/lib/" + prefix + zlib.cpp_info.libs[0] + suffix))
+
+        # flac dependency
+        tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/CMakeLists.txt")), 
+            "find_package(FLAC)",
+            '''set(FLAC_FOUND 1)
+               set(HAVE_FLAC 1)
+               set(FLAC_INCLUDE_DIR {})
+               set(FLAC_LIBRARIES {})
+               message("-- Using FLAC from conan package")'''.format(
+                   flac.package_folder + "/include", flac.package_folder + "/lib/" + prefix + flac.cpp_info.libs[0] + suffix))
 
         #flags += " -DFLAC_INCLUDE_DIR={}/include/".format(flac.package_folder)
         #flags += " -DFLAC_LIBRARY={}/lib/FLAC.{};{}/lib/FLAC++.{}".format(flac.package_folder, lib_suffix, flac.package_folder, lib_suffix)
