@@ -133,7 +133,7 @@ class Allegro5Conan(ConanFile):
                    zlib.package_folder + "/include", zlib.package_folder + "/lib/" + prefix + zlib.cpp_info.libs[0] + suffix))
 
         # flac dependency
-        tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/CMakeLists.txt")), 
+        tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/acodec/CMakeLists.txt")), 
             "find_package(FLAC)",
             '''set(FLAC_FOUND 1)
                set(HAVE_FLAC 1)
