@@ -84,13 +84,13 @@ class Allegro5Conan(ConanFile):
         # libpng dependency
         tools.replace_in_file(os.path.join(self.source_folder, "allegro5/addons/image/CMakeLists.txt"), 
             "find_package(PNG)",
-            "set(PNG_FOUND 1) \
-             set(HAVE_PNG 1) \
-             set(PNG_LIBRARIES {}) \
-             set(PNG_DEFINITIONS {}) \
-             message(Libraries:) \
-             message(${PNG_LIBRARIES}) \
-             set(PNG_INCLUDE_DIR {})".format()
+            '''set(PNG_FOUND 1)
+             set(HAVE_PNG 1)
+             set(PNG_LIBRARIES {})
+             set(PNG_DEFINITIONS {})
+             message(Libraries:)
+             message(${PNG_LIBRARIES})
+             set(PNG_INCLUDE_DIR {})'''.format()
         )
 
         #flags += " -DPNG_LIBRARY={}/lib/libpng16.{}".format(libpng_package_folder, lib_suffix)
