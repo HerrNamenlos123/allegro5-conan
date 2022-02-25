@@ -111,7 +111,7 @@ class Allegro5Conan(ConanFile):
                set(PNG_INCLUDE_DIR {})
                set(PNG_LIBRARIES {})
                message("-- Using PNG from conan package")'''.format(
-                   libpng.package_folder + "/include", libpng.package_folder.replace("\\","/") + "/lib/" + prefix + libpng.cpp_info.libs[0] + suffix))
+                   libpng.package_folder.replace("\\","/") + "/include", libpng.package_folder.replace("\\","/") + "/lib/" + prefix + libpng.cpp_info.libs[0] + suffix))
 
         # libjpeg dependency
         tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/image/CMakeLists.txt")), 
@@ -120,7 +120,7 @@ class Allegro5Conan(ConanFile):
                set(JPEG_INCLUDE_DIR {})
                set(JPEG_LIBRARIES {})
                message("-- Using JPEG from conan package")'''.format(
-                   libjpeg.package_folder + "/include", libjpeg.package_folder.replace("\\","/") + "/lib/" + prefix + libjpeg.cpp_info.libs[0] + suffix))
+                   libjpeg.package_folder.replace("\\","/") + "/include", libjpeg.package_folder.replace("\\","/") + "/lib/" + prefix + libjpeg.cpp_info.libs[0] + suffix))
 
         # libwebp dependency
         tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/image/CMakeLists.txt")), 
@@ -129,7 +129,7 @@ class Allegro5Conan(ConanFile):
                set(WEBP_INCLUDE_DIRS {})
                set(WEBP_LIBRARIES {})
                message("-- Using WebP from conan package")'''.format(
-                   libwebp.package_folder + "/include", 
+                   libwebp.package_folder.replace("\\","/") + "/include", 
                    libwebp.package_folder.replace("\\","/") + "/lib/" + prefix + libwebp.cpp_info.components["webp"].libs[0] + suffix))
 
         # FreeType dependency
@@ -139,7 +139,7 @@ class Allegro5Conan(ConanFile):
                set(FREETYPE_INCLUDE_DIRS {})
                set(FREETYPE_LIBRARIES {})
                message("-- Using FreeType from conan package")'''.format(
-                   freetype.package_folder + "/include/freetype2", 
+                   freetype.package_folder.replace("\\","/") + "/include/freetype2", 
                    freetype.package_folder.replace("\\","/") + "/lib/" + prefix + freetype.cpp_info.libs[0] + suffix))
 
         # zlib dependency
@@ -149,7 +149,7 @@ class Allegro5Conan(ConanFile):
                set(ZLIB_INCLUDE_DIR {})
                set(ZLIB_LIBRARY {})
                message("-- Using ZLIB from conan package")'''.format(
-                   zlib.package_folder + "/include", zlib.package_folder.replace("\\","/") + "/lib/" + prefix + zlib.cpp_info.libs[0] + suffix))
+                   zlib.package_folder.replace("\\","/") + "/include", zlib.package_folder.replace("\\","/") + "/lib/" + prefix + zlib.cpp_info.libs[0] + suffix))
 
         # flac dependency
         tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/acodec/CMakeLists.txt")), 
@@ -158,7 +158,7 @@ class Allegro5Conan(ConanFile):
                set(FLAC_INCLUDE_DIR {})
                set(FLAC_LIBRARIES {} {})
                message("-- Using FLAC from conan package")'''.format(
-                   flac.package_folder + "/include", 
+                   flac.package_folder.replace("\\","/") + "/include", 
                    flac.package_folder.replace("\\","/") + "/lib/" + prefix + flac.cpp_info.components["libflac"].libs[0] + suffix,
                    ogg.package_folder.replace("\\","/") + "/lib/" + prefix + ogg.cpp_info.components["ogglib"].libs[0] + suffix))
 
@@ -174,7 +174,7 @@ class Allegro5Conan(ConanFile):
                    set(OGG_LIBRARIES {})
                    set(VORBIS_LIBRARIES {} {} {})
                    message("-- Using VORBIS from conan package")'''.format(
-                       ogg.package_folder + "/include", vorbis.package_folder + "/include", 
+                       ogg.package_folder.replace("\\","/") + "/include", vorbis.package_folder.replace("\\","/") + "/include", 
                        ogg.package_folder.replace("\\","/") + "/lib/" + prefix + ogg.cpp_info.components["ogglib"].libs[0] + suffix,
                        vorbis.package_folder.replace("\\","/") + "/lib/" + prefix + vorbis.cpp_info.components["vorbisfile"].libs[0] + suffix,
                        vorbis.package_folder.replace("\\","/") + "/lib/" + prefix + vorbis.cpp_info.components["vorbismain"].libs[0] + suffix,
@@ -185,7 +185,7 @@ class Allegro5Conan(ConanFile):
                 "find_package(MiniMP3)",
                 '''set(MINIMP3_FOUND 1)
                    set(MINIMP3_INCLUDE_DIRS {})
-                   message("-- Using MiniMP3 from conan package")'''.format(mp3.package_folder + "/include"))
+                   message("-- Using MiniMP3 from conan package")'''.format(mp3.package_folder.replace("\\","/") + "/include"))
 
             # OpenAL dependency
             tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/audio/CMakeLists.txt")), 
@@ -194,7 +194,7 @@ class Allegro5Conan(ConanFile):
                    set(OPENAL_INCLUDE_DIR {})
                    set(OPENAL_LIBRARY {})
                    message("-- Using OpenAL from conan package")'''.format(
-                       openal.package_folder + "/include", 
+                       openal.package_folder.replace("\\","/") + "/include", 
                        openal.package_folder.replace("\\","/") + "/lib/" + prefix + openal.cpp_info.libs[0] + suffix))
 
             # PhysFS dependency
@@ -204,7 +204,7 @@ class Allegro5Conan(ConanFile):
                    set(PHYSFS_INCLUDE_DIR {})
                    set(PHYSFS_LIBRARY {})
                    message("-- Using PhysFS from conan package")'''.format(
-                       physfs.package_folder + "/include", 
+                       physfs.package_folder.replace("\\","/") + "/include", 
                        physfs.package_folder.replace("\\","/") + "/lib/" + prefix + physfs.cpp_info.libs[0] + suffix))
 
             # libalsa dependency
@@ -214,7 +214,7 @@ class Allegro5Conan(ConanFile):
                    set(ALSA_INCLUDE_DIRS {})
                    set(ALSA_LIBRARIES {})
                    message("-- Using ALSA from conan package")'''.format(
-                       alsa.package_folder + "/include", 
+                       alsa.package_folder.replace("\\","/") + "/include", 
                        alsa.package_folder.replace("\\","/") + "/lib/" + prefix + alsa.cpp_info.libs[0] + suffix))
 
             # PulseAudio dependency
@@ -225,7 +225,7 @@ class Allegro5Conan(ConanFile):
                    set(PULSEAUDIO_LIBRARIES {})
                    set(PULSEAUDIO_LIBRARY_DIRS {})
                    message("-- Using PulseAudio from conan package")'''.format(
-                       pulseaudio.package_folder + "/include", 
+                       pulseaudio.package_folder.replace("\\","/") + "/include", 
                        pulseaudio.cpp_info.components["pulse"].libs[0],
                        pulseaudio.package_folder.replace("\\","/") + "/lib/"))
 
@@ -236,7 +236,7 @@ class Allegro5Conan(ConanFile):
                    set(OPUS_INCLUDE_DIR {} {} {})
                    set(OPUS_LIBRARIES {} {} {} {})
                    message("-- Using OPUS from conan package")'''.format(
-                       opusfile.package_folder + "/include", opus.package_folder + "/include", opus.package_folder + "/include/opus", 
+                       opusfile.package_folder.replace("\\","/") + "/include", opus.package_folder.replace("\\","/") + "/include", opus.package_folder.replace("\\","/") + "/include/opus", 
                        opusfile.package_folder.replace("\\","/") + "/lib/" + prefix + opusfile.cpp_info.components["opusurl"].libs[0] + suffix,
                        opusfile.package_folder.replace("\\","/") + "/lib/" + prefix + opusfile.cpp_info.components["libopusfile"].libs[0] + suffix,
                        opus.package_folder.replace("\\","/") + "/lib/" + prefix + opus.cpp_info.components["libopus"].libs[0] + suffix,
@@ -249,7 +249,7 @@ class Allegro5Conan(ConanFile):
                    set(THEORA_INCLUDE_DIR {})
                    set(THEORA_LIBRARIES {} {})
                    message("-- Using libtheora from conan package")'''.format(
-                       theora.package_folder + "/include", 
+                       theora.package_folder.replace("\\","/") + "/include", 
                        theora.package_folder.replace("\\","/") + "/lib/" + prefix + theora.cpp_info.components["theoradec"].libs[0] + suffix,
                        theora.package_folder.replace("\\","/") + "/lib/" + prefix + theora.cpp_info.components["theoraenc"].libs[0] + suffix))
 
@@ -262,7 +262,7 @@ class Allegro5Conan(ConanFile):
                    set(OGG_LIBRARIES {})
                    set(VORBIS_LIBRARIES {} {} {})
                    message("-- Using VORBIS from conan package")'''.format(
-                       ogg.package_folder + "/include", vorbis.package_folder + "/include", 
+                       ogg.package_folder.replace("\\","/") + "/include", vorbis.package_folder.replace("\\","/") + "/include", 
                        ogg.package_folder.replace("\\","/") + "/lib/" + prefix + ogg.cpp_info.components["ogglib"].libs[0] + suffix,
                        vorbis.package_folder.replace("\\","/") + "/lib/" + prefix + vorbis.cpp_info.components["vorbisfile"].libs[0] + suffix,
                        vorbis.package_folder.replace("\\","/") + "/lib/" + prefix + vorbis.cpp_info.components["vorbismain"].libs[0] + suffix,
