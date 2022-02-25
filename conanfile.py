@@ -20,13 +20,13 @@ class Allegro5Conan(ConanFile):
     # Fixed dependencies
     requires = "libpng/1.6.37", \
                 "zlib/1.2.11", \
-                "bzip2/1.0.8", \
                 "libjpeg/9d", \
                 "freetype/2.11.1", \
                 "libwebp/1.2.2", \
                 "flac/1.3.3", \
                 "ogg/1.3.5", \
-                "vorbis/1.3.7"
+                "vorbis/1.3.7", \
+                "minimp3/20200304"
 
     def requirements(self):       # Conditional dependencies
         if self.settings.os != "Windows":
@@ -50,7 +50,6 @@ class Allegro5Conan(ConanFile):
 
         zlib = self.dependencies["zlib"]
         libpng = self.dependencies["libpng"]
-        bzip2 = self.dependencies["bzip2"]
 
         libjpeg = self.dependencies["libjpeg"]
         freetype = self.dependencies["freetype"]
@@ -58,6 +57,7 @@ class Allegro5Conan(ConanFile):
         flac = self.dependencies["flac"]
         ogg = self.dependencies["ogg"]
         vorbis = self.dependencies["vorbis"]
+        mp3 = self.dependencies["minimp3"]
 
         # Configure dependency flags for cmake
         flags = "-Wno-dev"
@@ -162,6 +162,15 @@ class Allegro5Conan(ConanFile):
                    vorbis.package_folder + "/lib/" + prefix + vorbis.cpp_info.components["vorbisfile"].libs[0] + suffix,
                    vorbis.package_folder + "/lib/" + prefix + vorbis.cpp_info.components["vorbismain"].libs[0] + suffix,
                    ogg.package_folder + "/lib/" + prefix + ogg.cpp_info.components["ogglib"].libs[0] + suffix))
+
+        # minimp3 dependency
+        tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/acodec/CMakeLists.txt")), 
+            "find_package(MiniMP3)",
+            '''set(MINIMP3_FOUND 1)
+               set(HAVE_MINIMP3 1)
+               set(MINIMP3_INCLUDE_DIRS {})
+               message("-- Using MiniMP3 from conan package")'''.format(
+                   mp3.package_folder + "/include"))
 
         # Call cmake generate
         path = Path(self.build_folder + "/allegro5/build")
