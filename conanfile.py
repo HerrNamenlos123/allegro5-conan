@@ -81,8 +81,8 @@ class Allegro5Conan(ConanFile):
             flags += " -DWANT_STATIC_RUNTIME=false"
             flags += " -DPREFER_STATIC_DEPS=false"
 
-        print(self._source_subfolder)
-        tools.replace_in_file(os.path.join(self._source_subfolder))
+        print(self.source_folder)
+        tools.replace_in_file(os.path.join(self.source_folder))
 
         #flags += " -DPNG_LIBRARY={}/lib/libpng16.{}".format(libpng_package_folder, lib_suffix)
         #flags += " -DPNG_LIBRARIES={}/lib/libpng16.{}".format(libpng_package_folder, lib_suffix)
