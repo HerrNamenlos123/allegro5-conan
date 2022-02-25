@@ -84,7 +84,7 @@ class Allegro5Conan(ConanFile):
                set(PNG_INCLUDE_DIR {})
                set(PNG_LIBRARIES {})
                message("-- Using PNG from conan package")'''.format(
-                   libpng.package_folder + "/include", libpng.package_folder + "/" + libpng.cpp_info.libs[0]))
+                   libpng.package_folder + "/include", libpng.package_folder + "/lib/" + libpng.cpp_info.libs[0]))
 
         # libjpeg dependency
         tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/image/CMakeLists.txt")), 
@@ -94,7 +94,7 @@ class Allegro5Conan(ConanFile):
                set(JPEG_INCLUDE_DIR {})
                set(JPEG_LIBRARIES {})
                message("-- Using JPEG from conan package")'''.format(
-                   libjpeg.package_folder + "/include", libjpeg.package_folder + "/" + libjpeg.cpp_info.libs[0]))
+                   libjpeg.package_folder + "/include", libjpeg.package_folder + "/lib/" + libjpeg.cpp_info.libs[0]))
 
         # libwebp dependency
         tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/image/CMakeLists.txt")), 
@@ -105,7 +105,7 @@ class Allegro5Conan(ConanFile):
                set(WEBP_LIBRARIES {})
                message("-- Using WebP from conan package")'''.format(
                    libwebp.package_folder + "/include", 
-                   libwebp.package_folder + "/" + libwebp.cpp_info.components["webp"].libs[0]))
+                   libwebp.package_folder + "/lib/" + libwebp.cpp_info.components["webp"].libs[0]))
 
         # FreeType dependency
         tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/CMakeLists.txt")), 
@@ -116,7 +116,7 @@ class Allegro5Conan(ConanFile):
                set(FREETYPE_LIBRARIES {})
                message("-- Using FreeType from conan package")'''.format(
                    freetype.package_folder + "/include/freetype2", 
-                   freetype.package_folder + "/" + freetype.cpp_info.libs[0]))
+                   freetype.package_folder + "/lib/" + freetype.cpp_info.libs[0]))
 #
         #flags += " -DZLIB_INCLUDE_DIR={}/include/".format(zlib_package_folder)
         #flags += " -DZLIB_LIBRARIES={}/lib/zlib.{}".format(zlib_package_folder, lib_suffix)
