@@ -207,9 +207,9 @@ class Allegro5Conan(ConanFile):
                set(PULSEAUDIO_INCLUDE_DIRS {})
                set(PULSEAUDIO_LIBRARIES {})
                set(PULSEAUDIO_LIBRARY_DIRS {})
-               message("-- Using ALSA from conan package")'''.format(
+               message("-- Using PulseAudio from conan package")'''.format(
                    pulseaudio.package_folder + "/include", 
-                   pulseaudio.cpp_info.libs[0],
+                   pulseaudio.cpp_info.components["pulse"].libs[0],
                    pulseaudio.package_folder + "/lib/"))
 
         # Call cmake generate
