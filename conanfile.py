@@ -27,7 +27,8 @@ class Allegro5Conan(ConanFile):
                 "ogg/1.3.5", \
                 "vorbis/1.3.7", \
                 "minimp3/20200304", \
-                "openal/1.21.1"
+                "openal/1.21.1", \
+                "physfs/3.0.2"
 
     def requirements(self):       # Conditional dependencies
         if self.settings.os != "Windows":
@@ -59,6 +60,7 @@ class Allegro5Conan(ConanFile):
         vorbis = self.dependencies["vorbis"]
         mp3 = self.dependencies["minimp3"]
         openal = self.dependencies["openal"]
+        physfs = self.dependencies["physfs"]
 
         # Configure dependency flags for cmake
         flags = "-Wno-dev"
@@ -182,6 +184,17 @@ class Allegro5Conan(ConanFile):
                message("-- Using OpenAL from conan package")'''.format(
                    openal.package_folder + "/include", 
                    openal.package_folder + "/lib/" + prefix + openal.cpp_info.libs[0] + suffix))
+
+        # PhysFS dependency
+        tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/audio/CMakeLists.txt")), 
+            "find_package(PhysFS)",
+            '''set(PHYSFS_FOUND 1)
+               set(HAVE_PHYSFS 1)
+               set(PHYSFS_INCLUDE_DIR {})
+               set(PHYSFS_LIBRARY {})
+               message("-- Using PhysFS from conan package")'''.format(
+                   physfs.package_folder + "/include", 
+                   physfs.package_folder + "/lib/" + prefix + physfs.cpp_info.libs[0] + suffix))
 
         # Call cmake generate
         path = Path(self.build_folder + "/allegro5/build")
