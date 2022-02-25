@@ -225,7 +225,7 @@ class Allegro5Conan(ConanFile):
                set(OPUS_LIBRARIES {} {})
                message("-- Using OPUS from conan package")'''.format(
                    opus.package_folder + "/include", opusfile.package_folder + "/include", 
-                   opus.package_folder + "/lib/" + prefix + opus.cpp_info.components["libopusfile"].libs[0] + suffix,
+                   opus.package_folder + "/lib/" + prefix + opus.cpp_info.components["libopus"].libs[0] + suffix,
                    opusfile.package_folder + "/lib/" + prefix + opusfile.cpp_info.components["libopusfile"].libs[0] + suffix))
 
         # Call cmake generate
