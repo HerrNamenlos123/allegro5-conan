@@ -154,7 +154,7 @@ class Allegro5Conan(ConanFile):
                set(HAVE_VORBIS 1)
                set(OGG_INCLUDE_DIR {})
                set(VORBIS_INCLUDE_DIR {})
-               set(OGG_LIBRARY {})
+               set(OGG_LIBRARIES {})
                set(VORBIS_LIBRARIES {} {} {})
                message("-- Using VORBIS from conan package")'''.format(
                    ogg.package_folder + "/include", vorbis.package_folder + "/include", 
