@@ -31,6 +31,7 @@ class Allegro5Conan(ConanFile):
                 "physfs/3.0.2", \
                 "libalsa/1.2.5.1", \
                 "pulseaudio/14.2", \
+                "opus/1.3.1", \
                 "opusfile/0.12"
 
     def requirements(self):       # Conditional dependencies
@@ -67,6 +68,7 @@ class Allegro5Conan(ConanFile):
         physfs = self.dependencies["physfs"]
         alsa = self.dependencies["libalsa"]
         pulseaudio = self.dependencies["pulseaudio"]
+        opus = self.dependencies["opus"]
         opusfile = self.dependencies["opusfile"]
 
         # Configure dependency flags for cmake
@@ -219,10 +221,11 @@ class Allegro5Conan(ConanFile):
         tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/acodec/CMakeLists.txt")), 
             "find_package(Opus)",
             '''set(OPUS_FOUND 1)
-               set(OPUS_INCLUDE_DIR {})
-               set(OPUS_LIBRARIES {})
+               set(OPUS_INCLUDE_DIR {} {})
+               set(OPUS_LIBRARIES {} {})
                message("-- Using OPUS from conan package")'''.format(
-                   opusfile.package_folder + "/include", 
+                   opus.package_folder + "/include", opusfile.package_folder + "/include", 
+                   opus.package_folder + "/lib/" + prefix + opus.cpp_info.components["libopusfile"].libs[0] + suffix,
                    opusfile.package_folder + "/lib/" + prefix + opusfile.cpp_info.components["libopusfile"].libs[0] + suffix))
 
         # Call cmake generate
