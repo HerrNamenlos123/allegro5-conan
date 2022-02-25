@@ -159,8 +159,9 @@ class Allegro5Conan(ConanFile):
                    ogg.package_folder + "/include", vorbis.package_folder + "/include", 
                    ogg.package_folder + "/lib/" + prefix + ogg.cpp_info.components["ogglib"].libs[0] + suffix,
                    vorbis.package_folder + "/lib/" + prefix + vorbis.cpp_info.components["vorbismain"].libs[0] + suffix,
-                   vorbis.package_folder + "/lib/" + prefix + vorbis.cpp_info.components["vorbisfile"].libs[0] + suffix,
+                   "",
                    vorbis.package_folder + "/lib/" + prefix + vorbis.cpp_info.components["vorbisenc"].libs[0] + suffix))
+                   #vorbis.package_folder + "/lib/" + prefix + vorbis.cpp_info.components["vorbisfile"].libs[0] + suffix
 
         # Call cmake generate
         path = Path(self.build_folder + "/allegro5/build")
