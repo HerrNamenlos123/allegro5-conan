@@ -26,7 +26,8 @@ class Allegro5Conan(ConanFile):
                 "flac/1.3.3", \
                 "ogg/1.3.5", \
                 "vorbis/1.3.7", \
-                "minimp3/20200304"
+                "minimp3/20200304", \
+                "openal/1.21.1"
 
     def requirements(self):       # Conditional dependencies
         if self.settings.os != "Windows":
@@ -50,7 +51,6 @@ class Allegro5Conan(ConanFile):
 
         zlib = self.dependencies["zlib"]
         libpng = self.dependencies["libpng"]
-
         libjpeg = self.dependencies["libjpeg"]
         freetype = self.dependencies["freetype"]
         libwebp = self.dependencies["libwebp"]
@@ -58,6 +58,7 @@ class Allegro5Conan(ConanFile):
         ogg = self.dependencies["ogg"]
         vorbis = self.dependencies["vorbis"]
         mp3 = self.dependencies["minimp3"]
+        openal = self.dependencies["openal"]
 
         # Configure dependency flags for cmake
         flags = "-Wno-dev"
@@ -169,8 +170,18 @@ class Allegro5Conan(ConanFile):
             '''set(MINIMP3_FOUND 1)
                set(HAVE_MINIMP3 1)
                set(MINIMP3_INCLUDE_DIRS {})
-               message("-- Using MiniMP3 from conan package")'''.format(
-                   mp3.package_folder + "/include"))
+               message("-- Using MiniMP3 from conan package")'''.format(mp3.package_folder + "/include"))
+
+        # OpenAL dependency
+        tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/audio/CMakeLists.txt")), 
+            "find_package(OpenAL)",
+            '''set(OPENAL_FOUND 1)
+               set(HAVE_OPENAL 1)
+               set(OPENAL_INCLUDE_DIR {})
+               set(OPENAL_LIBRARY {})
+               message("-- Using OpenAL from conan package")'''.format(
+                   openal.package_folder + "/include", 
+                   openal.package_folder + "/lib/" + prefix + openal.cpp_info.libs[0] + suffix))
 
         # Call cmake generate
         path = Path(self.build_folder + "/allegro5/build")
