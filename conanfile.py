@@ -28,7 +28,8 @@ class Allegro5Conan(ConanFile):
                 "vorbis/1.3.7", \
                 "minimp3/20200304", \
                 "openal/1.21.1", \
-                "physfs/3.0.2"
+                "physfs/3.0.2", \
+                "libalsa/1.2.5.1"
 
     def requirements(self):       # Conditional dependencies
         if self.settings.os != "Windows":
@@ -61,6 +62,7 @@ class Allegro5Conan(ConanFile):
         mp3 = self.dependencies["minimp3"]
         openal = self.dependencies["openal"]
         physfs = self.dependencies["physfs"]
+        alsa = self.dependencies["libalsa"]
 
         # Configure dependency flags for cmake
         flags = "-Wno-dev"
@@ -195,6 +197,17 @@ class Allegro5Conan(ConanFile):
                message("-- Using PhysFS from conan package")'''.format(
                    physfs.package_folder + "/include", 
                    physfs.package_folder + "/lib/" + prefix + physfs.cpp_info.libs[0] + suffix))
+
+        # libalsa dependency
+        tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/audio/CMakeLists.txt")), 
+            "pkg_check_modules(ALSA alsa)",
+            '''set(ALSA_FOUND 1)
+               set(HAVE_ALSA 1)
+               set(ALSA_INCLUDE_DIRS {})
+               set(ALSA_LIBRARIES {})
+               message("-- Using ALSA from conan package")'''.format(
+                   alsa.package_folder + "/include", 
+                   alsa.package_folder + "/lib/" + prefix + alsa.cpp_info.libs[0] + suffix))
 
         # Call cmake generate
         path = Path(self.build_folder + "/allegro5/build")
