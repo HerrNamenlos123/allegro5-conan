@@ -25,7 +25,8 @@ class Allegro5Conan(ConanFile):
                 "freetype/2.11.1", \
                 "libwebp/1.2.2", \
                 "flac/1.3.3", \
-                "ogg/1.3.5"
+                "ogg/1.3.5", \
+                "vorbis/1.3.7"
 
     def requirements(self):       # Conditional dependencies
         if self.settings.os != "Windows":
@@ -56,6 +57,7 @@ class Allegro5Conan(ConanFile):
         libwebp = self.dependencies["libwebp"]
         flac = self.dependencies["flac"]
         ogg = self.dependencies["ogg"]
+        vorbis = self.dependencies["vorbis"]
 
         # Configure dependency flags for cmake
         flags = "-Wno-dev"
@@ -68,6 +70,7 @@ class Allegro5Conan(ConanFile):
         flags += " -DWANT_TESTS=false"
         flags += " -DWANT_DEMO=false"
         flags += " -DWANT_RELEASE_LOGGING=false"
+        flags += " -DWANT_VORBIS=true"
 
         prefix = "lib"
         suffix = ".a"
@@ -140,7 +143,18 @@ class Allegro5Conan(ConanFile):
                set(FLAC_INCLUDE_DIR {})
                set(FLAC_LIBRARIES {})
                message("-- Using FLAC from conan package")'''.format(
-                   flac.package_folder + "/include", flac.package_folder + "/lib/" + prefix + flac.cpp_info.components["libflac"].libs[0] + suffix))
+                   flac.package_folder + "/include", flac.package_folder + "/lib/" + 
+                   prefix + flac.cpp_info.components["libflac"].libs[0] + suffix))
+
+        # vorbis dependency
+        tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/acodec/CMakeLists.txt")), 
+            "find_package(Vorbis)",
+            '''set(VORBIS_FOUND 1)
+               set(HAVE_VORBIS 1)
+               set(VORBIS_INCLUDE_DIR {})
+               set(VORBIS_LIBRARIES {})
+               message("-- Using VORBIS from conan package")'''.format(
+                   vorbis.package_folder + "/include", vorbis.package_folder + "/lib/" + prefix + vorbis.cpp_info.libs[0] + suffix))
 
         # Call cmake generate
         path = Path(self.build_folder + "/allegro5/build")
