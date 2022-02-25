@@ -115,7 +115,7 @@ class Allegro5Conan(ConanFile):
                set(FREETYPE_INCLUDE_DIRS {})
                set(FREETYPE_LIBRARIES {})
                message("-- Using FreeType from conan package")'''.format(
-                   freetype.package_folder + "/include", 
+                   freetype.package_folder + "/include/freetype2", 
                    freetype.package_folder + "/" + freetype.cpp_info.libs[0]))
 #
         #flags += " -DZLIB_INCLUDE_DIR={}/include/".format(zlib_package_folder)
