@@ -92,6 +92,16 @@ class Allegro5Conan(ConanFile):
                message("-- Using JPEG from conan package")'''.format(
                    libjpeg.package_folder + "/include", libjpeg.package_folder + "/" + libjpeg.cpp_info.libs[0]))
 
+        # libwebp dependency
+        tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/image/CMakeLists.txt")), 
+            "find_package(WebP)",
+            '''set(WEBP_FOUND 1)
+               set(HAVE_WEBP 1)
+               set(WEBP_INCLUDE_DIRS {})
+               set(WEBP_LIBRARIES {})
+               message("-- Using WebP from conan package")'''.format(
+                   libwebp.package_folder + "/include", libwebp.package_folder + "/" + libwebp.cpp_info.libs[0]))
+
         #flags += " -DPNG_LIBRARY={}/lib/libpng16.{}".format(libpng_package_folder, lib_suffix)
         #flags += " -DPNG_LIBRARIES={}/lib/libpng16.{}".format(libpng_package_folder, lib_suffix)
 
