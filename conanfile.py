@@ -215,14 +215,14 @@ class Allegro5Conan(ConanFile):
                    pulseaudio.package_folder + "/lib/"))
 
         # libopus dependency
-        tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/audio/CMakeLists.txt")), 
+        tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/acodec/CMakeLists.txt")), 
             "find_package(Opus)",
             '''set(OPUS_FOUND 1)
                set(OPUS_INCLUDE_DIR {})
                set(OPUS_LIBRARIES {})
                message("-- Using OPUS from conan package")'''.format(
                    opus.package_folder + "/include", 
-                   opus.package_folder + "/lib/" + prefix + opus.cpp_info.libs[0] + suffix))
+                   opus.package_folder + "/lib/" + prefix + opus.cpp_info.components["libopus"].libs[0] + suffix))
 
         # Call cmake generate
         path = Path(self.build_folder + "/allegro5/build")
