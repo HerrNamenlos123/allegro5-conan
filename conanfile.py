@@ -33,7 +33,8 @@ class Allegro5Conan(ConanFile):
                 "pulseaudio/14.2", \
                 "opus/1.3.1", \
                 "opusfile/0.12", \
-                "theora/1.1.1"
+                "theora/1.1.1", \
+                "gtk/system"
 
     def requirements(self):       # Conditional dependencies
         if self.settings.os != "Windows":
