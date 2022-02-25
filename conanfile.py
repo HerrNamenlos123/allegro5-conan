@@ -102,26 +102,21 @@ class Allegro5Conan(ConanFile):
                message("-- Using WebP from conan package")'''.format(
                    libwebp.package_folder + "/include", 
                    libwebp.package_folder + "/" + libwebp.cpp_info.components["webp"].libs[0]))
+
+        # FreeType dependency
+        tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/CMakeLists.txt")), 
+            "find_package(Freetype)",
+            '''set(FREETYPE_FOUND 1)
+               set(HAVE_FREETYPE 1)
+               set(FREETYPE_INCLUDE_DIRS {})
+               set(FREETYPE_LIBRARIES {})
+               message("-- Using FreeType from conan package")'''.format(
+                   freetype.package_folder + "/include", 
+                   freetype.package_folder + "/" + freetype.cpp_info.libs[0]))
 #
         #flags += " -DZLIB_INCLUDE_DIR={}/include/".format(zlib_package_folder)
         #flags += " -DZLIB_LIBRARIES={}/lib/zlib.{}".format(zlib_package_folder, lib_suffix)
         #flags += " -DZLIB_LIBRARY={}/lib/zlib.{}".format(zlib_package_folder, lib_suffix)
-#
-        #flags += " -DWEBP_INCLUDE_DIRS={}/include/".format(libwebp.package_folder)
-        #path = libwebp.package_folder
-        #front = lib_prefix
-        #end = lib_suffix
-        #flags += " -DWEBP_LIBRARIES={}/lib/{}webp.{};{}/lib/{}webpdecoder.{};{}/lib/{}webpdemux.{};{}/lib/{}webpmux.{}".format(
-        #    path, front, end, path, front, end, path, front, end, path, front, end)
-    #
-        #flags += " -DFREETYPE_INCLUDE_DIRS={}/include/".format(freetype.package_folder)
-        #flags += " -DFREETYPE_LIBRARY={}/lib/freetype.lib;".format(freetype.package_folder)
-        #flags += " -DBZIP2_INCLUDE_DIR={}/include/".format(bzip2_package_folder)
-        #flags += " -DBZIP2_LIBRARIES={}/lib/bz2.{};".format(bzip2_package_folder, lib_suffix)
-#
-        #flags += " -DFREETYPE_PNG=on"
-        #flags += " -DFREETYPE_BZIP2=on"
-        #flags += " -DFREETYPE_ZLIB=on"
 #
         #flags += " -DFLAC_INCLUDE_DIR={}/include/".format(flac.package_folder)
         #flags += " -DFLAC_LIBRARY={}/lib/FLAC.{};{}/lib/FLAC++.{}".format(flac.package_folder, lib_suffix, flac.package_folder, lib_suffix)
