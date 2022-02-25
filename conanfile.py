@@ -63,7 +63,6 @@ class Allegro5Conan(ConanFile):
 
         # Configure dependency flags for cmake
         flags = "-Wno-dev"
-        flags += " -DPREFER_STATIC_DEPS=true"
         flags += " -DSHARED=" + str(self.options.shared).lower()
         flags += " -DWANT_DOCS=false"
         flags += " -DWANT_DOCS_HTML=false"
@@ -78,12 +77,14 @@ class Allegro5Conan(ConanFile):
         lib_suffix = "a"
         if self.settings.compiler == "Visual Studio" or self.settings.compiler == "clang":
             flags += " -DWANT_STATIC_RUNTIME=" + str(self.settings.compiler.runtime == "MT").lower()
+            flags += " -DPREFER_STATIC_DEPS=true"
             lib_prefix = ""
             lib_suffix = "lib"
             #flags += " -DPNG_LIBRARY={}/lib/libpng16.{}".format(libpng_package_folder, lib_suffix)
             #flags += " -DPNG_LIBRARIES={}/lib/libpng16.{}".format(libpng_package_folder, lib_suffix)
         else:
             flags += " -DWANT_STATIC_RUNTIME=false"
+            flags += " -DPREFER_STATIC_DEPS=false"
             #flags += " -DPNG_LIBRARY={}/lib/libpng.{}".format(libpng_package_folder, lib_suffix)
             #flags += " -DPNG_LIBRARIES={}/lib/libpng.{}".format(libpng_package_folder, lib_suffix)
 
