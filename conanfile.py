@@ -62,7 +62,7 @@ class Allegro5Conan(ConanFile):
             bzip2_package_folder = bzip2_package_folder.replace("\\","/")
 
         # Configure dependency flags for cmake
-        flags = ""
+        flags = "-Wno-dev"
         flags += " -DPREFER_STATIC_DEPS=true"
         flags += " -DSHARED=" + str(self.options.shared).lower()
         flags += " -DWANT_DOCS=false"
@@ -73,52 +73,49 @@ class Allegro5Conan(ConanFile):
         flags += " -DWANT_TESTS=false"
         flags += " -DWANT_DEMO=false"
         flags += " -DWANT_RELEASE_LOGGING=false"
-        
-        if self.settings.os == "Windows":
+
+        lib_ending = "a"
+        if self.settings.compiler == "Visual Studio" or self.settings.compiler == "clang":
             flags += " -DWANT_STATIC_RUNTIME=" + str(self.settings.compiler.runtime == "MT").lower()
+            lib_ending = "lib"
         else:
             flags += " -DWANT_STATIC_RUNTIME=false"
 
-        flags += " -DPNG_PNG_INCLUDE_DIR=" + libpng_package_folder + "/include/"
-        flags += " -DPNG_LIBRARY=" + libpng_package_folder + "/lib/libpng16.lib;"
-        flags += " -DPNG_LIBRARIES=" + libpng_package_folder + "/lib/libpng16.lib;"
+        flags += " -DPNG_PNG_INCLUDE_DIR={}/include/".format(libpng_package_folder)
+        flags += " -DPNG_LIBRARY={}/lib/libpng16.{};".format(libpng_package_folder, lib_ending)
+        flags += " -DPNG_LIBRARIES={}/lib/libpng16.{};".format(libpng_package_folder, lib_ending)
 
-        flags += " -DJPEG_INCLUDE_DIR=" + libjpeg.package_folder + "/include/"
-        flags += " -DJPEG_LIBRARY=" + libjpeg.package_folder + "/lib/libjpeg.lib;"
+        flags += " -DJPEG_INCLUDE_DIR={}/include/".format(libjpeg.package_folder)
+        flags += " -DJPEG_LIBRARY={}/lib/libjpeg.{};".format(libjpeg.package_folder, lib_ending)
 
-        flags += " -DZLIB_INCLUDE_DIR=" + zlib_package_folder + "/include/"
-        flags += " -DZLIB_LIBRARIES=" + zlib_package_folder + "/lib/zlib.lib"
-        flags += " -DZLIB_LIBRARY=" + zlib_package_folder + "/lib/zlib.lib"
+        flags += " -DZLIB_INCLUDE_DIR={}/include/".format(zlib_package_folder)
+        flags += " -DZLIB_LIBRARIES={}/lib/zlib.{}".format(zlib_package_folder, lib_ending)
+        flags += " -DZLIB_LIBRARY={}/lib/zlib.{}".format(zlib_package_folder, lib_ending)
 
-        flags += " -DWEBP_INCLUDE_DIRS=" + libwebp.package_folder + "/include/"
-        flags += " -DWEBP_LIBRARIES=" + libwebp.package_folder + "/lib/webp.lib;" + \
-            libwebp.package_folder + "/lib/webpdecoder.lib;" + \
-            libwebp.package_folder + "/lib/webpdemux.lib;" + \
-            libwebp.package_folder + "/lib/webpmux.lib"
+        flags += " -DWEBP_INCLUDE_DIRS={}/include/".format(libwebp.package_folder)
+        path = libwebp.package_folder
+        end = lib_ending
+        flags += " -DWEBP_LIBRARIES={}/lib/webp.{};{}/lib/webpdecoder.{};{}/lib/webpdemux.{};{}/lib/webpmux.{}".format(path, end, path, end, path, end, path, end)
         
-        flags += " -DFREETYPE_INCLUDE_DIRS=" + freetype.package_folder + "/include/"
-        flags += " -DFREETYPE_LIBRARY=" + freetype.package_folder + "/lib/freetype.lib;"
-        flags += " -DBZIP2_INCLUDE_DIR=" + bzip2_package_folder + "/include/"
-        flags += " -DBZIP2_LIBRARIES=" + bzip2_package_folder + "/lib/bz2.lib;"
+        flags += " -DFREETYPE_INCLUDE_DIRS={}/include/".format(freetype.package_folder)
+        flags += " -DFREETYPE_LIBRARY={}/lib/freetype.lib;".format(freetype.package_folder)
+        flags += " -DBZIP2_INCLUDE_DIR={}/include/".format(bzip2_package_folder)
+        flags += " -DBZIP2_LIBRARIES={}/lib/bz2.{};".format(bzip2_package_folder, lib_ending)
 
         flags += " -DFREETYPE_PNG=on"
         flags += " -DFREETYPE_BZIP2=on"
         flags += " -DFREETYPE_ZLIB=on"
 
-        flags += " -DFLAC_INCLUDE_DIR=" + flac.package_folder + "/include/"
-        flags += " -DFLAC_LIBRARY=" + flac.package_folder + "/lib/FLAC.lib;" + flac.package_folder + "/lib/FLAC++.lib;"
-        flags += " -DOGG_INCLUDE_DIR=" + ogg.package_folder + "/include/"
-        flags += " -DOGG_LIBRARY=" + ogg.package_folder + "/lib/ogg.lib;"
+        flags += " -DFLAC_INCLUDE_DIR={}/include/".format(flac.package_folder)
+        flags += " -DFLAC_LIBRARY={}/lib/FLAC.{};{}/lib/FLAC++.{};".format(flac.package_folder, lib_ending, flac.package_folder, lib_ending)
+        flags += " -DOGG_INCLUDE_DIR={}/include/".format(ogg.package_folder)
+        flags += " -DOGG_LIBRARY={}/lib/ogg.{};".format(ogg.package_folder, lib_ending)
 
         # Call cmake generate
         path = Path(self.build_folder + "/allegro5/build")
         path.mkdir(parents=True, exist_ok=True)
         os.chdir(path)
-        
-        if self.settings.os == "Windows":
-            self.run("cmake .. -Wno-dev" + flags)
-        else:
-            self.run("cmake .. -Wno-dev")
+        self.run("cmake .. " + flags)
 
     def build(self):
         if self.settings.os == "Windows":
