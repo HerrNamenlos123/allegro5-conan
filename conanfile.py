@@ -221,10 +221,10 @@ class Allegro5Conan(ConanFile):
         tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/acodec/CMakeLists.txt")), 
             "find_package(Opus)",
             '''set(OPUS_FOUND 1)
-               set(OPUS_INCLUDE_DIR {} {})
+               set(OPUS_INCLUDE_DIR {} {} {})
                set(OPUS_LIBRARIES {} {})
                message("-- Using OPUS from conan package")'''.format(
-                   opusfile.package_folder + "/include", opus.package_folder + "/include", 
+                   opusfile.package_folder + "/include", opus.package_folder + "/include", opus.package_folder + "/include/opus", 
                    opus.package_folder + "/lib/" + prefix + opus.cpp_info.components["libopus"].libs[0] + suffix,
                    opusfile.package_folder + "/lib/" + prefix + opusfile.cpp_info.components["libopusfile"].libs[0] + suffix))
 
