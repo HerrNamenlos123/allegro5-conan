@@ -16,40 +16,40 @@ class Allegro5Conan(ConanFile):
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = {"shared": False, "fPIC": True}
     generators = "cmake"
-
-    # Fixed dependencies
-    requires = "libpng/1.6.37", \
-                "zlib/1.2.11", \
-                "libjpeg/9d", \
-                "freetype/2.11.1", \
-                "libwebp/1.2.2", \
-                "flac/1.3.3", \
-                "ogg/1.3.5"
-
+                
     def requirements(self):       # Conditional dependencies
-        self.options["freetype"].with_png = False
-        self.options["freetype"].with_zlib = False
-        self.options["freetype"].with_bzip2 = False
-        self.options["freetype"].with_brotli = False
-        self.options["opusfile"].http = False
+
+        self.requires("libpng/1.6.37")
+        self.requires("zlib/1.2.11")
+        self.requires("libjpeg/9d")
+        self.requires("freetype/2.11.1")
+        self.requires("libwebp/1.2.2")
+        self.requires("flac/1.3.3")
+        self.requires("ogg/1.3.5")
+        self.requires("vorbis/1.3.7")
+        self.requires("minimp3/20200304")
+        self.requires("openal/1.21.1")
+        self.requires("physfs/3.0.2")
+        self.requires("opus/1.3.1")
+        self.requires("opusfile/0.12")
+        self.requires("theora/1.1.1")
 
         if self.settings.os != "Windows":
 
             self.requires("xorg/system")
-            self.requires("vorbis/1.3.7")
-            self.requires("minimp3/20200304")
-            self.requires("openal/1.21.1")
-            self.requires("physfs/3.0.2")
             self.requires("libalsa/1.2.5.1")
             self.requires("pulseaudio/14.2")
-            self.requires("opus/1.3.1")
-            self.requires("opusfile/0.12")
-            self.requires("theora/1.1.1")
             self.requires("gtk/system")
 
             package_tool = tools.SystemPackageTool(conanfile=self, default_mode='verify')
             package_tool.install(update=True, packages="libgl1-mesa-dev")
             package_tool.install(update=True, packages="libgtk-3-dev")
+            
+        self.options["freetype"].with_png = False
+        self.options["freetype"].with_zlib = False
+        self.options["freetype"].with_bzip2 = False
+        self.options["freetype"].with_brotli = False
+        self.options["opusfile"].http = False
 
     def config_options(self):
         if self.settings.os == "Windows":
@@ -68,17 +68,17 @@ class Allegro5Conan(ConanFile):
         libwebp = self.dependencies["libwebp"]
         flac = self.dependencies["flac"]
         ogg = self.dependencies["ogg"]
+        vorbis = self.dependencies["vorbis"]
+        mp3 = self.dependencies["minimp3"]
+        openal = self.dependencies["openal"]
+        physfs = self.dependencies["physfs"]
+        opus = self.dependencies["opus"]
+        opusfile = self.dependencies["opusfile"]
+        theora = self.dependencies["theora"]
 
         if self.settings.os != "Windows":
-            vorbis = self.dependencies["vorbis"]
-            mp3 = self.dependencies["minimp3"]
-            openal = self.dependencies["openal"]
-            physfs = self.dependencies["physfs"]
             alsa = self.dependencies["libalsa"]
             pulseaudio = self.dependencies["pulseaudio"]
-            opus = self.dependencies["opus"]
-            opusfile = self.dependencies["opusfile"]
-            theora = self.dependencies["theora"]
 
         # Configure dependency flags for cmake
         flags = "-Wno-dev"
@@ -162,51 +162,89 @@ class Allegro5Conan(ConanFile):
                    flac.package_folder.replace("\\","/") + "/lib/" + prefix + flac.cpp_info.components["libflac"].libs[0] + suffix,
                    ogg.package_folder.replace("\\","/") + "/lib/" + prefix + ogg.cpp_info.components["ogglib"].libs[0] + suffix))
 
+        # vorbis dependency
+        tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/acodec/CMakeLists.txt")), 
+            "find_package(Vorbis)",
+            '''set(VORBIS_FOUND 1)
+               set(OGG_INCLUDE_DIR {})
+               set(VORBIS_INCLUDE_DIR {})
+               set(OGG_LIBRARIES {})
+               set(VORBIS_LIBRARIES {} {} {})
+               message("-- Using VORBIS from conan package")'''.format(
+                   ogg.package_folder.replace("\\","/") + "/include", vorbis.package_folder.replace("\\","/") + "/include", 
+                   ogg.package_folder.replace("\\","/") + "/lib/" + prefix + ogg.cpp_info.components["ogglib"].libs[0] + suffix,
+                   vorbis.package_folder.replace("\\","/") + "/lib/" + prefix + vorbis.cpp_info.components["vorbisfile"].libs[0] + suffix,
+                   vorbis.package_folder.replace("\\","/") + "/lib/" + prefix + vorbis.cpp_info.components["vorbismain"].libs[0] + suffix,
+                   ogg.package_folder.replace("\\","/") + "/lib/" + prefix + ogg.cpp_info.components["ogglib"].libs[0] + suffix))
+
+        # minimp3 dependency
+        tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/acodec/CMakeLists.txt")), 
+            "find_package(MiniMP3)",
+            '''set(MINIMP3_FOUND 1)
+               set(MINIMP3_INCLUDE_DIRS {})
+               message("-- Using MiniMP3 from conan package")'''.format(mp3.package_folder.replace("\\","/") + "/include"))
+
+        # OpenAL dependency
+        tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/audio/CMakeLists.txt")), 
+            "find_package(OpenAL)",
+            '''set(OPENAL_FOUND 1)
+               set(OPENAL_INCLUDE_DIR {} {})
+               set(OPENAL_LIBRARY {})
+               message("-- Using OpenAL from conan package")'''.format(
+                   openal.package_folder.replace("\\","/") + "/include", 
+                   openal.package_folder.replace("\\","/") + "/include/AL", 
+                   openal.package_folder.replace("\\","/") + "/lib/" + prefix + openal.cpp_info.libs[0] + suffix))
+
+        # PhysFS dependency
+        tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/CMakeLists.txt")), 
+            "find_package(PhysFS)",
+            '''set(PHYSFS_FOUND 1)
+               set(PHYSFS_INCLUDE_DIR {})
+               set(PHYSFS_LIBRARY {})
+               message("-- Using PhysFS from conan package")'''.format(
+                   physfs.package_folder.replace("\\","/") + "/include", 
+                   physfs.package_folder.replace("\\","/") + "/lib/" + prefix + physfs.cpp_info.libs[0] + suffix))
+
+        # libopus/opusfile dependency
+        tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/acodec/CMakeLists.txt")), 
+            "find_package(Opus)",
+            '''set(OPUS_FOUND 1)
+               set(OPUS_INCLUDE_DIR {} {} {})
+               set(OPUS_LIBRARIES {} {} {} {})
+               message("-- Using OPUS from conan package")'''.format(
+                   opusfile.package_folder.replace("\\","/") + "/include", opus.package_folder.replace("\\","/") + "/include", opus.package_folder.replace("\\","/") + "/include/opus", 
+                   opusfile.package_folder.replace("\\","/") + "/lib/" + prefix + opusfile.cpp_info.components["opusurl"].libs[0] + suffix,
+                   opusfile.package_folder.replace("\\","/") + "/lib/" + prefix + opusfile.cpp_info.components["libopusfile"].libs[0] + suffix,
+                   opus.package_folder.replace("\\","/") + "/lib/" + prefix + opus.cpp_info.components["libopus"].libs[0] + suffix,
+                   ogg.package_folder.replace("\\","/") + "/lib/" + prefix + ogg.cpp_info.components["ogglib"].libs[0] + suffix))
+
+        # libtheora dependency
+        tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/video/CMakeLists.txt")), 
+            "find_package(Theora)",
+            '''set(THEORA_FOUND 1)
+               set(THEORA_INCLUDE_DIR {})
+               set(THEORA_LIBRARIES {} {})
+               message("-- Using libtheora from conan package")'''.format(
+                   theora.package_folder.replace("\\","/") + "/include", 
+                   theora.package_folder.replace("\\","/") + "/lib/" + prefix + theora.cpp_info.components["theoradec"].libs[0] + suffix,
+                   theora.package_folder.replace("\\","/") + "/lib/" + prefix + theora.cpp_info.components["theoraenc"].libs[0] + suffix))
+
+        # vorbis dependency
+        tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/video/CMakeLists.txt")), 
+            "find_package(Vorbis)",
+            '''set(VORBIS_FOUND 1)
+               set(OGG_INCLUDE_DIR {})
+               set(VORBIS_INCLUDE_DIR {})
+               set(OGG_LIBRARIES {})
+               set(VORBIS_LIBRARIES {} {} {})
+               message("-- Using VORBIS from conan package")'''.format(
+                   ogg.package_folder.replace("\\","/") + "/include", vorbis.package_folder.replace("\\","/") + "/include", 
+                   ogg.package_folder.replace("\\","/") + "/lib/" + prefix + ogg.cpp_info.components["ogglib"].libs[0] + suffix,
+                   vorbis.package_folder.replace("\\","/") + "/lib/" + prefix + vorbis.cpp_info.components["vorbisfile"].libs[0] + suffix,
+                   vorbis.package_folder.replace("\\","/") + "/lib/" + prefix + vorbis.cpp_info.components["vorbismain"].libs[0] + suffix,
+                   ogg.package_folder.replace("\\","/") + "/lib/" + prefix + ogg.cpp_info.components["ogglib"].libs[0] + suffix))
 
         if self.settings.os != "Windows":
-
-            # vorbis dependency
-            tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/acodec/CMakeLists.txt")), 
-                "find_package(Vorbis)",
-                '''set(VORBIS_FOUND 1)
-                   set(OGG_INCLUDE_DIR {})
-                   set(VORBIS_INCLUDE_DIR {})
-                   set(OGG_LIBRARIES {})
-                   set(VORBIS_LIBRARIES {} {} {})
-                   message("-- Using VORBIS from conan package")'''.format(
-                       ogg.package_folder.replace("\\","/") + "/include", vorbis.package_folder.replace("\\","/") + "/include", 
-                       ogg.package_folder.replace("\\","/") + "/lib/" + prefix + ogg.cpp_info.components["ogglib"].libs[0] + suffix,
-                       vorbis.package_folder.replace("\\","/") + "/lib/" + prefix + vorbis.cpp_info.components["vorbisfile"].libs[0] + suffix,
-                       vorbis.package_folder.replace("\\","/") + "/lib/" + prefix + vorbis.cpp_info.components["vorbismain"].libs[0] + suffix,
-                       ogg.package_folder.replace("\\","/") + "/lib/" + prefix + ogg.cpp_info.components["ogglib"].libs[0] + suffix))
-
-            # minimp3 dependency
-            tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/acodec/CMakeLists.txt")), 
-                "find_package(MiniMP3)",
-                '''set(MINIMP3_FOUND 1)
-                   set(MINIMP3_INCLUDE_DIRS {})
-                   message("-- Using MiniMP3 from conan package")'''.format(mp3.package_folder.replace("\\","/") + "/include"))
-
-            # OpenAL dependency
-            tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/audio/CMakeLists.txt")), 
-                "find_package(OpenAL)",
-                '''set(OPENAL_FOUND 1)
-                   set(OPENAL_INCLUDE_DIR {} {})
-                   set(OPENAL_LIBRARY {})
-                   message("-- Using OpenAL from conan package")'''.format(
-                       openal.package_folder.replace("\\","/") + "/include", 
-                       openal.package_folder.replace("\\","/") + "/include/AL", 
-                       openal.package_folder.replace("\\","/") + "/lib/" + prefix + openal.cpp_info.libs[0] + suffix))
-
-            # PhysFS dependency
-            tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/CMakeLists.txt")), 
-                "find_package(PhysFS)",
-                '''set(PHYSFS_FOUND 1)
-                   set(PHYSFS_INCLUDE_DIR {})
-                   set(PHYSFS_LIBRARY {})
-                   message("-- Using PhysFS from conan package")'''.format(
-                       physfs.package_folder.replace("\\","/") + "/include", 
-                       physfs.package_folder.replace("\\","/") + "/lib/" + prefix + physfs.cpp_info.libs[0] + suffix))
 
             # libalsa dependency
             tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/audio/CMakeLists.txt")), 
@@ -229,45 +267,6 @@ class Allegro5Conan(ConanFile):
                        pulseaudio.package_folder.replace("\\","/") + "/include", 
                        pulseaudio.cpp_info.components["pulse"].libs[0],
                        pulseaudio.package_folder.replace("\\","/") + "/lib/"))
-
-            # libopus/opusfile dependency
-            tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/acodec/CMakeLists.txt")), 
-                "find_package(Opus)",
-                '''set(OPUS_FOUND 1)
-                   set(OPUS_INCLUDE_DIR {} {} {})
-                   set(OPUS_LIBRARIES {} {} {} {})
-                   message("-- Using OPUS from conan package")'''.format(
-                       opusfile.package_folder.replace("\\","/") + "/include", opus.package_folder.replace("\\","/") + "/include", opus.package_folder.replace("\\","/") + "/include/opus", 
-                       opusfile.package_folder.replace("\\","/") + "/lib/" + prefix + opusfile.cpp_info.components["opusurl"].libs[0] + suffix,
-                       opusfile.package_folder.replace("\\","/") + "/lib/" + prefix + opusfile.cpp_info.components["libopusfile"].libs[0] + suffix,
-                       opus.package_folder.replace("\\","/") + "/lib/" + prefix + opus.cpp_info.components["libopus"].libs[0] + suffix,
-                       ogg.package_folder.replace("\\","/") + "/lib/" + prefix + ogg.cpp_info.components["ogglib"].libs[0] + suffix))
-
-            # libtheora dependency
-            tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/video/CMakeLists.txt")), 
-                "find_package(Theora)",
-                '''set(THEORA_FOUND 1)
-                   set(THEORA_INCLUDE_DIR {})
-                   set(THEORA_LIBRARIES {} {})
-                   message("-- Using libtheora from conan package")'''.format(
-                       theora.package_folder.replace("\\","/") + "/include", 
-                       theora.package_folder.replace("\\","/") + "/lib/" + prefix + theora.cpp_info.components["theoradec"].libs[0] + suffix,
-                       theora.package_folder.replace("\\","/") + "/lib/" + prefix + theora.cpp_info.components["theoraenc"].libs[0] + suffix))
-
-            # vorbis dependency
-            tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/video/CMakeLists.txt")), 
-                "find_package(Vorbis)",
-                '''set(VORBIS_FOUND 1)
-                   set(OGG_INCLUDE_DIR {})
-                   set(VORBIS_INCLUDE_DIR {})
-                   set(OGG_LIBRARIES {})
-                   set(VORBIS_LIBRARIES {} {} {})
-                   message("-- Using VORBIS from conan package")'''.format(
-                       ogg.package_folder.replace("\\","/") + "/include", vorbis.package_folder.replace("\\","/") + "/include", 
-                       ogg.package_folder.replace("\\","/") + "/lib/" + prefix + ogg.cpp_info.components["ogglib"].libs[0] + suffix,
-                       vorbis.package_folder.replace("\\","/") + "/lib/" + prefix + vorbis.cpp_info.components["vorbisfile"].libs[0] + suffix,
-                       vorbis.package_folder.replace("\\","/") + "/lib/" + prefix + vorbis.cpp_info.components["vorbismain"].libs[0] + suffix,
-                       ogg.package_folder.replace("\\","/") + "/lib/" + prefix + ogg.cpp_info.components["ogglib"].libs[0] + suffix))
 
         # Call cmake generate
         path = Path(self.build_folder + "/allegro5/build")
