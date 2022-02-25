@@ -98,7 +98,7 @@ class Allegro5Conan(ConanFile):
             '''set(WEBP_FOUND 1)
                set(HAVE_WEBP 1)
                set(WEBP_INCLUDE_DIRS {})
-               set(WEBP_LIBRARIES {} {} {} {})
+               set(WEBP_LIBRARIES {})
                message("-- Using WebP from conan package")'''.format(
                    libwebp.package_folder + "/include", 
                    libwebp.package_folder + "/" + libwebp.cpp_info.components["webp"].libs[0]))
