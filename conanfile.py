@@ -53,17 +53,6 @@ class Allegro5Conan(ConanFile):
         flac = self.dependencies["flac"]
         ogg = self.dependencies["ogg"]
 
-        # Read paths into variables because they are read-only
-        zlib_package_folder = zlib.package_folder
-        libpng_package_folder = libpng.package_folder
-        bzip2_package_folder = bzip2.package_folder
-
-        # Library paths cannot contain windows backspaces because of cmake's target_link_libraries()
-        if self.settings.os == "Windows":
-            zlib_package_folder = zlib_package_folder.replace("\\","/")
-            libpng_package_folder = libpng_package_folder.replace("\\","/")
-            bzip2_package_folder = bzip2_package_folder.replace("\\","/")
-
         # Configure dependency flags for cmake
         flags = "-Wno-dev"
         flags += " -DSHARED=" + str(self.options.shared).lower()
@@ -84,22 +73,14 @@ class Allegro5Conan(ConanFile):
             flags += " -DPREFER_STATIC_DEPS=false"
 
         # libpng dependency
-        print(self.build_folder)
-        tools.replace_in_file(str(os.path.join(self.source_folder, "allegro5/addons/image/CMakeLists.txt")), 
+        tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/image/CMakeLists.txt")), 
             "find_package(PNG)",
-            '''find_package(PNG)
-               message(Libraries:)
-               message(${PNG_LIBRARIES})
-               message(PNG_DEFINITIONS:)
-               message(${PNG_DEFINITIONS})
-               message(PNG_INCLUDE_DIR:)
-               message(${PNG_INCLUDE_DIR})
-               set(PNG_FOUND 1)
+            '''set(PNG_FOUND 1)
                set(HAVE_PNG 1)
-               set(PNG_LIBRARIES 1)
-               set(PNG_DEFINITIONS 1)
-               message("-- Using PNG from conan package")
-               set(PNG_INCLUDE_DIR 1)''')
+               set(PNG_LIBRARIES {})
+               message("-- Using PNG from conan package: {}")
+               set(PNG_INCLUDE_DIR {})'''.format(
+                   libpng.package_folder + "/" + libpng.cpp_info.libs[0], self.build_folder, libpng.package_folder + "/include"))
 
         #flags += " -DPNG_LIBRARY={}/lib/libpng16.{}".format(libpng_package_folder, lib_suffix)
         #flags += " -DPNG_LIBRARIES={}/lib/libpng16.{}".format(libpng_package_folder, lib_suffix)
