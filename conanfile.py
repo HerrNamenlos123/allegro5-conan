@@ -186,11 +186,8 @@ class Allegro5Conan(ConanFile):
             "find_package(MiniMP3)",
             '''set(MINIMP3_FOUND 1)
                set(MINIMP3_INCLUDE_DIRS {})
-               message("MiniMP3 include: {}")
                list(APPEND ACODEC_INCLUDE_DIRECTORIES ${{MINIMP3_INCLUDE_DIRS}})
-               message("-- Using MiniMP3 from conan package")'''.format(
-                   mp3.package_folder.replace("\\","/") + "/include", 
-                   mp3.package_folder.replace("\\","/") + "/include"))
+               message("-- Using MiniMP3 from conan package")'''.format(mp3.package_folder.replace("\\","/") + "/include"))
 
         # OpenAL dependency
         tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/audio/CMakeLists.txt")), 
@@ -227,7 +224,6 @@ class Allegro5Conan(ConanFile):
                    ogg.package_folder.replace("\\","/") + "/lib/" + prefix + ogg.cpp_info.components["ogglib"].libs[0] + suffix))
 
         # libtheora dependency
-        #theoralib1 = theora.cpp_info.components["theoradec"].libs[0]
         _static = "_static" if self.settings.compiler == "Visual Studio" else ""
         theoralibs = theora.package_folder.replace("\\","/") + "/lib/" + "libtheora" + _static + suffix
         if not self.settings.compiler == "Visual Studio":
