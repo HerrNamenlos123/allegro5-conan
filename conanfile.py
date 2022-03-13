@@ -285,7 +285,7 @@ class Allegro5Conan(ConanFile):
         if self.settings.compiler == "Visual Studio":   
             flags += " -DCMAKE_CXX_FLAGS=\"/wd4267\""   # possible loss of data warning
         else:
-            flags += " -Wno-unused-variable -Wp"
+            flags += " -Wno-unused-variable -Wp,-w"
 
         # Call cmake generate
         path = Path(self.build_folder + "/allegro5/build")
