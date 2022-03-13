@@ -181,7 +181,7 @@ class Allegro5Conan(ConanFile):
         tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/acodec/CMakeLists.txt")), 
             "find_package(MiniMP3)",
             '''set(MINIMP3_FOUND 1)
-               set(MINIMP3_INCLUDE_DIRS {})
+               set(MINIMP3_INCLUDE_DIR {})
                message("-- Using MiniMP3 from conan package")'''.format(mp3.package_folder.replace("\\","/") + "/include"))
 
         # OpenAL dependency
@@ -219,15 +219,20 @@ class Allegro5Conan(ConanFile):
                    ogg.package_folder.replace("\\","/") + "/lib/" + prefix + ogg.cpp_info.components["ogglib"].libs[0] + suffix))
 
         # libtheora dependency
+        #theoralib1 = theora.cpp_info.components["theoradec"].libs[0]
+        _static = "_static" if self.settings.compiler == "Visual Studio" else ""
+        theoralibs = theora.package_folder.replace("\\","/") + "/lib/" + "libtheora" + _static + suffix
+        if not self.settings.compiler == "Visual Studio":
+            theoralibs += " " + theora.package_folder.replace("\\","/") + "/lib/" + "libtheoraenc" + _static + suffix
+            theoralibs += " " + theora.package_folder.replace("\\","/") + "/lib/" + "libtheoradec" + _static + suffix
+
         tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/video/CMakeLists.txt")), 
             "find_package(Theora)",
             '''set(THEORA_FOUND 1)
                set(THEORA_INCLUDE_DIR {})
-               set(THEORA_LIBRARIES {} {})
+               set(THEORA_LIBRARIES {})
                message("-- Using libtheora from conan package")'''.format(
-                   theora.package_folder.replace("\\","/") + "/include", 
-                   theora.package_folder.replace("\\","/") + "/lib/" + prefix + theora.cpp_info.components["theoradec"].libs[0] + suffix,
-                   theora.package_folder.replace("\\","/") + "/lib/" + prefix + theora.cpp_info.components["theoraenc"].libs[0] + suffix))
+                   theora.package_folder.replace("\\","/") + "/include", theoralibs))
 
         # vorbis dependency
         tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/video/CMakeLists.txt")), 
@@ -244,7 +249,7 @@ class Allegro5Conan(ConanFile):
                    vorbis.package_folder.replace("\\","/") + "/lib/" + prefix + vorbis.cpp_info.components["vorbismain"].libs[0] + suffix,
                    ogg.package_folder.replace("\\","/") + "/lib/" + prefix + ogg.cpp_info.components["ogglib"].libs[0] + suffix))
 
-        if self.settings.os != "Windows":
+        if not self.settings.compiler == "Visual Studio":
 
             # libalsa dependency
             tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/audio/CMakeLists.txt")), 
@@ -267,6 +272,13 @@ class Allegro5Conan(ConanFile):
                        pulseaudio.package_folder.replace("\\","/") + "/include", 
                        pulseaudio.cpp_info.components["pulse"].libs[0],
                        pulseaudio.package_folder.replace("\\","/") + "/lib/"))
+
+        # Disable specific compiler warnings
+        if self.settings.compiler == "Visual Studio":
+            flags += " -DCMAKE_CXX_FLAGS=\"/wd4267\""
+        else:
+            #flags += " -DCMAKE_CXX_FLAGS=\"/wd4267\""
+            pass
 
         # Call cmake generate
         path = Path(self.build_folder + "/allegro5/build")
