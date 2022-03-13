@@ -307,7 +307,10 @@ class Allegro5Conan(ConanFile):
         for addon in os.listdir('allegro5/addons'):
             self.copy("*.h", dst="include", src="allegro5/addons/" + addon)
 
-        self.copy("*.lib", dst="lib", src="allegro5/build/lib/RelWithDebInfo")
+        if self.settings.compiler == "Visual Studio":
+            self.copy("*.lib", dst="lib", src="allegro5/build/lib/RelWithDebInfo")
+        else:
+            self.copy("*.a", dst="lib", src="allegro5/build/lib")
 
     def package_info(self):
         self.cpp_info.libs = ["allegro_monolith-static"]
