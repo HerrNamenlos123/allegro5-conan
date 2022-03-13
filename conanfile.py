@@ -187,6 +187,7 @@ class Allegro5Conan(ConanFile):
             '''set(MINIMP3_FOUND 1)
                set(MINIMP3_INCLUDE_DIRS {})
                message("MiniMP3 include: {}")
+               list(APPEND ACODEC_INCLUDE_DIRECTORIES ${{MINIMP3_INCLUDE_DIRS}})
                message("-- Using MiniMP3 from conan package")'''.format(
                    mp3.package_folder.replace("\\","/") + "/include", 
                    mp3.package_folder.replace("\\","/") + "/include"))
@@ -282,7 +283,9 @@ class Allegro5Conan(ConanFile):
 
         # Disable specific compiler warnings
         if self.settings.compiler == "Visual Studio":   
-            flags += " -DCMAKE_CXX_FLAGS=\"/wd4267\""   # Silence warnings about possible loss of data
+            flags += " -DCMAKE_CXX_FLAGS=\"/wd4267\""   # possible loss of data warning
+        else:
+            flags += " -Wno-unused-variable -Wp"
 
         # Call cmake generate
         path = Path(self.build_folder + "/allegro5/build")
