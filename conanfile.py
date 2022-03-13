@@ -56,8 +56,8 @@ class Allegro5Conan(ConanFile):
             del self.options.fPIC
 
     def source(self):
-        #self.run("git clone https://github.com/liballeg/allegro5.git --depth=1 --single-branch --branch=5.2.7")
-        self.run("git clone https://github.com/liballeg/allegro5.git --depth=1 --single-branch --branch=master")
+        self.run("git clone https://github.com/liballeg/allegro5.git --depth=1 --single-branch --branch=5.2.7")
+        #self.run("git clone https://github.com/liballeg/allegro5.git --depth=1 --single-branch --branch=master")
 
     def generate(self):
 
@@ -304,5 +304,6 @@ class Allegro5Conan(ConanFile):
         self.copy("*.lib", dst="lib", src="allegro5/build/lib/RelWithDebInfo")
 
     def package_info(self):
+        
         self.cpp_info.libs = ["allegro_monolith-static"]
 
