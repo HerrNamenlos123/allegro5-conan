@@ -210,10 +210,10 @@ class Allegro5Conan(ConanFile):
             "find_package(Opus)",
             '''set(OPUS_FOUND 1)
                set(OPUS_INCLUDE_DIR {} {} {})
-               set(OPUS_LIBRARIES {} {} {} {})
+               set(OPUS_LIBRARIES {} {} {})
                message("-- Using OPUS from conan package")'''.format(
                    opusfile.package_folder.replace("\\","/") + "/include", opus.package_folder.replace("\\","/") + "/include", opus.package_folder.replace("\\","/") + "/include/opus", 
-                   opusfile.package_folder.replace("\\","/") + "/lib/" + prefix + opusfile.cpp_info.components["opusurl"].libs[0] + suffix,
+                   #opusfile.package_folder.replace("\\","/") + "/lib/" + prefix + opusfile.cpp_info.components["opusurl"].libs[0] + suffix,
                    opusfile.package_folder.replace("\\","/") + "/lib/" + prefix + opusfile.cpp_info.components["libopusfile"].libs[0] + suffix,
                    opus.package_folder.replace("\\","/") + "/lib/" + prefix + opus.cpp_info.components["libopus"].libs[0] + suffix,
                    ogg.package_folder.replace("\\","/") + "/lib/" + prefix + ogg.cpp_info.components["ogglib"].libs[0] + suffix))
