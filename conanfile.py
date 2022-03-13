@@ -92,6 +92,7 @@ class Allegro5Conan(ConanFile):
         flags += " -DWANT_DEMO=false"
         flags += " -DWANT_RELEASE_LOGGING=false"
         flags += " -DWANT_VORBIS=true"
+        flags += " -DWANT_MP3=true"
 
         prefix = "lib"
         suffix = ".a"
@@ -136,10 +137,11 @@ class Allegro5Conan(ConanFile):
         tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/CMakeLists.txt")), 
             "find_package(Freetype)",
             '''set(FREETYPE_FOUND 1)
-               set(FREETYPE_INCLUDE_DIRS {})
+               set(FREETYPE_INCLUDE_DIRS {} {})
                set(FREETYPE_LIBRARIES {})
                message("-- Using FreeType from conan package")'''.format(
                    freetype.package_folder.replace("\\","/") + "/include/freetype2", 
+                   zlib.package_folder.replace("\\","/") + "/include", 
                    freetype.package_folder.replace("\\","/") + "/lib/" + prefix + freetype.cpp_info.libs[0] + suffix))
 
         # zlib dependency
@@ -149,12 +151,14 @@ class Allegro5Conan(ConanFile):
                set(ZLIB_INCLUDE_DIR {})
                set(ZLIB_LIBRARY {})
                message("-- Using ZLIB from conan package")'''.format(
-                   zlib.package_folder.replace("\\","/") + "/include", zlib.package_folder.replace("\\","/") + "/lib/" + prefix + zlib.cpp_info.libs[0] + suffix))
+                   zlib.package_folder.replace("\\","/") + "/include", 
+                   zlib.package_folder.replace("\\","/") + "/lib/" + prefix + zlib.cpp_info.libs[0] + suffix))
 
         # flac dependency
         tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/acodec/CMakeLists.txt")), 
             "find_package(FLAC)",
             '''set(FLAC_FOUND 1)
+               set(FLAC_STATIC 1)
                set(FLAC_INCLUDE_DIR {})
                set(FLAC_LIBRARIES {} {})
                message("-- Using FLAC from conan package")'''.format(
@@ -163,7 +167,7 @@ class Allegro5Conan(ConanFile):
                    ogg.package_folder.replace("\\","/") + "/lib/" + prefix + ogg.cpp_info.components["ogglib"].libs[0] + suffix))
 
         # vorbis dependency
-        tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/acodec/CMakeLists.txt")), 
+        tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/acodec/CMakeLists.txt")),
             "find_package(Vorbis)",
             '''set(VORBIS_FOUND 1)
                set(OGG_INCLUDE_DIR {})
@@ -181,8 +185,11 @@ class Allegro5Conan(ConanFile):
         tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/acodec/CMakeLists.txt")), 
             "find_package(MiniMP3)",
             '''set(MINIMP3_FOUND 1)
-               set(MINIMP3_INCLUDE_DIR {})
-               message("-- Using MiniMP3 from conan package")'''.format(mp3.package_folder.replace("\\","/") + "/include"))
+               set(MINIMP3_INCLUDE_DIRS {})
+               message("MiniMP3 include: {}")
+               message("-- Using MiniMP3 from conan package")'''.format(
+                   mp3.package_folder.replace("\\","/") + "/include", 
+                   mp3.package_folder.replace("\\","/") + "/include"))
 
         # OpenAL dependency
         tools.replace_in_file(str(os.path.join(self.build_folder, "allegro5/addons/audio/CMakeLists.txt")), 
@@ -274,16 +281,14 @@ class Allegro5Conan(ConanFile):
                        pulseaudio.package_folder.replace("\\","/") + "/lib/"))
 
         # Disable specific compiler warnings
-        if self.settings.compiler == "Visual Studio":
-            flags += " -DCMAKE_CXX_FLAGS=\"/wd4267\""
-        else:
-            #flags += " -DCMAKE_CXX_FLAGS=\"/wd4267\""
-            pass
+        if self.settings.compiler == "Visual Studio":   
+            flags += " -DCMAKE_CXX_FLAGS=\"/wd4267\""   # Silence warnings about possible loss of data
 
         # Call cmake generate
         path = Path(self.build_folder + "/allegro5/build")
         path.mkdir(parents=True, exist_ok=True)
         os.chdir(path)
+        print("cmake command: cmake .. " + flags)
         self.run("cmake .. " + flags)
 
     def build(self):
