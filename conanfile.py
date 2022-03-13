@@ -33,6 +33,7 @@ class Allegro5Conan(ConanFile):
         self.requires("opus/1.3.1")
         self.requires("opusfile/0.12")
         self.requires("theora/1.1.1")
+        self.requires("opengl/system")
 
         if self.settings.os != "Windows":
 
@@ -287,7 +288,6 @@ class Allegro5Conan(ConanFile):
         path = Path(self.build_folder + "/allegro5/build")
         path.mkdir(parents=True, exist_ok=True)
         os.chdir(path)
-        print("cmake command: cmake .. " + flags)
         self.run("cmake .. " + flags)
 
     def build(self):
@@ -300,10 +300,16 @@ class Allegro5Conan(ConanFile):
             self.run("make") # Build the project
 
     def package(self):
-        self.copy("*", dst="include", src="allegro5/include")
+        self.copy("*.h", dst="include", src="allegro5/include")
+        self.copy("*.inl", dst="include", src="allegro5/include")
+        self.copy("*.h", dst="include", src="allegro5/build/include")
+
+        for addon in os.listdir('allegro5/addons'):
+            self.copy("*.h", dst="include", src="allegro5/addons/" + addon)
+
         self.copy("*.lib", dst="lib", src="allegro5/build/lib/RelWithDebInfo")
 
     def package_info(self):
-        
         self.cpp_info.libs = ["allegro_monolith-static"]
-
+        if self.settings.os == "Windows":
+            self.cpp_info.system_libs = [ "opengl32", "shlwapi" ]

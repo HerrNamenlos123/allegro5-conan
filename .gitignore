@@ -3,3 +3,4 @@ allegro5
 conan.lock
 conaninfo*
 graph_info.json
+test
