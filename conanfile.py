@@ -108,25 +108,10 @@ class Allegro5Conan(ConanFile):
         path = os.path.join(self._source_subfolder, "src", "win", "whaptic.cpp")
         tools.replace_in_file(path, "#include <initguid.h>", "#define INITGUID\n#include <../shared/guiddef.h>")
 
-        #self._patch_addon(None, "-DALLEGRO_SRC ", "-DALLEGRO_SRC -DFREEIMAGE_LIB ")
+        self._patch_addon(None, "-DALLEGRO_SRC ", "-DALLEGRO_SRC -DFREEIMAGE_LIB ")
 
         #self._patch_addon(None, "find_package(X11)", "find_package(X11 REQUIRED)\nset(X11_LIBRARIES ${X11_LIBRARIES} xcb dl)")
         #self._patch_addon(None, "set(INSTALL_PKG_CONFIG_FILES true)", "set(INSTALL_PKG_CONFIG_FILES false)")
-
-        #self._patch_addon("addons", "run_c_compile_test(\"${FREETYPE_TEST_SOURCE}\" TTF_COMPILES)", "")
-        #self._patch_addon("addons", "run_c_compile_test(\"${FREETYPE_TEST_SOURCE}\" TTF_COMPILES_WITH_EXTRA_DEPS)", 
-        #    '''find_package(Brotli REQUIRED)
-        #       list(APPEND FREETYPE_STATIC_LIBRARIES "${Brotli_LIBRARIES}")
-        #       run_c_compile_test("${FREETYPE_TEST_SOURCE}" TTF_COMPILES_WITH_EXTRA_DEPS)''')
-        #self._patch_addon(None, "link_directories(${MONOLITH_LINK_DIRECTORIES})",       # ALSA IS NON-WINDOWS ONLY!!!!!!
-        #    '''link_directories(${MONOLITH_LINK_DIRECTORIES})\n
-        #       find_package(ZLIB REQUIRED)\n
-        #       find_package(Ogg REQUIRED)\n
-        #       find_package(OpenSSL REQUIRED)\n
-        #       find_package(Opus REQUIRED)\n
-        #       find_package(PNG REQUIRED)\n
-        #       find_package(BZip2 REQUIRED)\n
-        #       find_package(Brotli REQUIRED)\n''')
 
     def add_find_package_case(self, file_name, name, toNames):
         with open(file_name, 'r') as f:
